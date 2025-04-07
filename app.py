@@ -37,21 +37,23 @@ def resultado():
             local_mais_barato = dados_item.iloc[0]
             local_mais_caro = dados_item.iloc[-1]
 
-            valor_unitario = local_mais_barato["Valor Unitário"]
-            valor_total = valor_unitario * qtde
-            valor_caro = local_mais_caro["Valor Unitário"] * qtde
+            valor_unitario_barato = local_mais_barato["Valor Unitário"]
+            valor_unitario_caro = local_mais_caro["Valor Unitário"]
 
-            economia = valor_caro - valor_total
+            valor_total_barato = valor_unitario_barato * qtde
+            valor_total_caro = valor_unitario_caro * qtde
+
+            economia = valor_total_caro - valor_total_barato
             economia_total += economia
-            gasto_total += valor_total
+            gasto_total += valor_total_barato
 
             local = local_mais_barato["Local"]
             item_resultado = {
                 "item": item,
                 "quantidade": qtde,
                 "local": local,
-                "valor_unitario": round(valor_unitario, 2),
-                "valor_total": round(valor_total, 2)
+                "valor_unitario": round(valor_unitario_barato, 2),
+                "valor_total": round(valor_total_barato, 2)
             }
 
             if local not in resultado_por_mercado:
