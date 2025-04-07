@@ -4,69 +4,78 @@
     <meta charset="UTF-8">
     <title>Pr3cin - Comparador de Preços</title>
     <style>
-        body { font-family: Arial; background: #f2f2f2; margin: 0; padding: 20px; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 10px; }
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; }
         h1 { text-align: center; color: #1a73e8; }
-        form { display: flex; flex-direction: column; gap: 15px; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; }
-        select, input[type="number"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 70%;
+        label, input, select { display: block; margin-bottom: 10px; width: 100%; }
+        .item-selecionado { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #f0f0f0; padding: 10px; border-radius: 5px; }
+        .btn-remover { background: #e53935; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .btn-adicionar, .btn-enviar {
+            background: #1a73e8; color: white; border: none;
+            padding: 10px 20px; border-radius: 5px;
+            cursor: pointer; margin-top: 10px;
         }
-        input[type="number"] {
-            width: 25%;
-        }
-        button {
-            padding: 10px;
-            background-color: #1a73e8;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #1558b0;
-        }
+        #busca { padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Comparador de Preços - Pr3cin</h1>
-        <form method="POST" action="/resultado">
-            <div id="itens">
-                <div class="item-row">
-                    <select name="produto">
-                        {% for produto in produtos %}
-                            <option value="{{ produto }}">{{ produto }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="number" name="quantidade" min="1" value="1" required>
-                </div>
-            </div>
+        <h1>Pr3cin</h1>
+        <form id="form-produtos" action="/resultado" method="post">
+            <label for="busca">Buscar produto:</label>
+            <input type="text" id="busca" placeholder="Digite para filtrar produtos...">
 
-            <button type="button" onclick="adicionarItem()">+ Adicionar Produto</button>
-            <button type="submit">Comparar Preços</button>
+            <label for="produto">Produto:</label>
+            <select id="produto">
+                {% for produto in produtos %}
+                    <option value="{{ produto }}">{{ produto }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" min="1" value="1">
+
+            <button type="button" class="btn-adicionar" onclick="adicionarProduto()">Adicionar Produto</button>
+
+            <div id="lista-itens"></div>
+
+            <button type="submit" class="btn-enviar">Ver Melhor Preço</button>
         </form>
     </div>
 
     <script>
-        function adicionarItem() {
-            const container = document.getElementById("itens");
-            const itemRow = document.createElement("div");
-            itemRow.className = "item-row";
-            itemRow.innerHTML = `
-                <select name="produto">
-                    {% for produto in produtos %}
-                        <option value="{{ produto }}">{{ produto }}</option>
-                    {% endfor %}
-                </select>
-                <input type="number" name="quantidade" min="1" value="1" required>
+        const listaItens = document.getElementById("lista-itens");
+        const produtoSelect = document.getElementById("produto");
+        const quantidadeInput = document.getElementById("quantidade");
+        const form = document.getElementById("form-produtos");
+
+        function adicionarProduto() {
+            const produto = produtoSelect.value;
+            const quantidade = quantidadeInput.value;
+
+            if (!produto || quantidade < 1) return;
+
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "item-selecionado";
+            itemDiv.innerHTML = `
+                <span>${produto} - ${quantidade} un.</span>
+                <button type="button" class="btn-remover" onclick="removerProduto(this)">Remover</button>
+                <input type="hidden" name="produto" value="${produto}">
+                <input type="hidden" name="quantidade" value="${quantidade}">
             `;
-            container.appendChild(itemRow);
+            listaItens.appendChild(itemDiv);
         }
+
+        function removerProduto(botao) {
+            botao.parentElement.remove();
+        }
+
+        document.getElementById("busca").addEventListener("input", function () {
+            const termo = this.value.toLowerCase();
+            for (const option of produtoSelect.options) {
+                option.style.display = option.value.toLowerCase().includes(termo) ? "" : "none";
+            }
+        });
     </script>
 </body>
 </html>
