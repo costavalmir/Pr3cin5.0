@@ -29,7 +29,11 @@ def resultado():
     gasto_total = 0
 
     for item, qtde in zip(itens_selecionados, quantidades):
-        qtde = int(qtde) if qtde.isdigit() else 1
+        try:
+            qtde = int(qtde)
+        except ValueError:
+            qtde = 1
+
         dados_item = df[df["Descrição do Item"] == item]
 
         if not dados_item.empty:
@@ -38,8 +42,8 @@ def resultado():
             local_mais_caro = dados_item.iloc[-1]
 
             valor_unitario = local_mais_barato["Valor Unitário"]
-            valor_total = round(valor_unitario * qtde, 2)
-            valor_caro = round(local_mais_caro["Valor Unitário"] * qtde, 2)
+            valor_total = valor_unitario * qtde
+            valor_caro = local_mais_caro["Valor Unitário"] * qtde
 
             economia = valor_caro - valor_total
             economia_total += economia
@@ -51,7 +55,7 @@ def resultado():
                 "quantidade": qtde,
                 "local": local,
                 "valor_unitario": round(valor_unitario, 2),
-                "valor_total": valor_total
+                "valor_total": round(valor_total, 2)
             }
 
             if local not in resultado_por_mercado:
