@@ -1,45 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Pr3cin - Escolha seus produtos</title>
+    <title>Pr3cin - Comparador de Preços</title>
     <style>
-        body { font-family: Arial; margin: 40px; background: #f7f7f7; }
-        .produto { margin-bottom: 10px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+        body { font-family: Arial; background: #f2f2f2; margin: 0; padding: 20px; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 10px; }
         h1 { text-align: center; color: #1a73e8; }
-        input[type="submit"] { margin-top: 20px; padding: 10px 20px; background: #1a73e8; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        input[type="number"] { width: 50px; margin-left: 10px; }
-        input[type="text"] { width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; }
-    </style>
-    <script>
-        function filtrarProdutos() {
-            const filtro = document.getElementById("filtro").value.toLowerCase();
-            const produtos = document.querySelectorAll(".produto");
-
-            produtos.forEach(p => {
-                const texto = p.innerText.toLowerCase();
-                p.style.display = texto.includes(filtro) ? "block" : "none";
-            });
+        form { display: flex; flex-direction: column; gap: 15px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; }
+        select, input[type="number"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 70%;
         }
-    </script>
+        input[type="number"] {
+            width: 25%;
+        }
+        button {
+            padding: 10px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #1558b0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Escolha os Produtos</h1>
-        <input type="text" id="filtro" onkeyup="filtrarProdutos()" placeholder="Buscar produto...">
-
-        <form method="post" action="/resultado">
-            {% for produto in produtos %}
-                <div class="produto">
-                    <input type="checkbox" name="produto" value="{{ produto }}">
-                    {{ produto }}
-                    <input type="number" name="quantidade" min="1" value="1">
+        <h1>Comparador de Preços - Pr3cin</h1>
+        <form method="POST" action="/resultado">
+            <div id="itens">
+                <div class="item-row">
+                    <select name="produto">
+                        {% for produto in produtos %}
+                            <option value="{{ produto }}">{{ produto }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" name="quantidade" min="1" value="1" required>
                 </div>
-            {% endfor %}
-            <input type="submit" value="Enviar Lista">
+            </div>
+
+            <button type="button" onclick="adicionarItem()">+ Adicionar Produto</button>
+            <button type="submit">Comparar Preços</button>
         </form>
     </div>
+
+    <script>
+        function adicionarItem() {
+            const container = document.getElementById("itens");
+            const itemRow = document.createElement("div");
+            itemRow.className = "item-row";
+            itemRow.innerHTML = `
+                <select name="produto">
+                    {% for produto in produtos %}
+                        <option value="{{ produto }}">{{ produto }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="quantidade" min="1" value="1" required>
+            `;
+            container.appendChild(itemRow);
+        }
+    </script>
 </body>
 </html>
