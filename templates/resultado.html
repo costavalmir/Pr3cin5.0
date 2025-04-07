@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -31,14 +30,14 @@
             <h2>{{ mercado }}</h2>
             <ul>
                 {% for item in itens %}
-                    <li>{{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)</li>
+                    <li>{{ item.item }} ({{ item.quantidade }} un.): R$ {{ '%.2f'|format(item.valor_total) }} (R$ {{ '%.2f'|format(item.valor_unitario) }} un.)</li>
                 {% endfor %}
             </ul>
         {% endfor %}
 
         <div class="resumo">
-            Total gasto: R$ {{ gasto_total }}<br>
-            Economia total: R$ {{ economia_total }}
+            Total gasto: R$ {{ '%.2f'|format(gasto_total) }}<br>
+            Economia total: R$ {{ '%.2f'|format(economia_total) }}
         </div>
 
         <button class="btn-copy" onclick="copiarLista()">Copiar Lista</button>
@@ -50,12 +49,12 @@
             {% for mercado, itens in resultado_por_mercado.items() %}
                 texto += "🛒 {{ mercado }}:\n";
                 {% for item in itens %}
-                    texto += "- {{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)\n";
+                    texto += "- {{ item.item }} ({{ item.quantidade }} un.): R$ {{ '%.2f'|format(item.valor_total) }} (R$ {{ '%.2f'|format(item.valor_unitario) }} un.)\n";
                 {% endfor %}
                 texto += "\n";
             {% endfor %}
-            texto += "💰 Total gasto: R$ {{ gasto_total }}\n";
-            texto += "🎉 Economia total: R$ {{ economia_total }}";
+            texto += "💰 Total gasto: R$ {{ '%.2f'|format(gasto_total) }}\n";
+            texto += "🎉 Economia total: R$ {{ '%.2f'|format(economia_total) }}";
 
             navigator.clipboard.writeText(texto).then(function() {
                 alert("Lista copiada com sucesso!");
