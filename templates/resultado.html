@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados - Pr3cin</title>
+    <style>
+        body { font-family: Arial; margin: 40px; background: #eef2f3; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { text-align: center; color: #1a73e8; }
+        h2 { margin-top: 40px; color: #333; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 10px; }
+        .btn-copy {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .resumo { margin-top: 30px; font-size: 1.1em; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Melhores Preços</h1>
+
+        {% for mercado, itens in resultado_por_mercado.items() %}
+            <h2>{{ mercado }}</h2>
+            <ul>
+                {% for item in itens %}
+                    <li>{{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+
+        <div class="resumo">
+            Total gasto: R$ {{ gasto_total }}<br>
+            Economia total: R$ {{ economia_total }}
+        </div>
+
+        <button class="btn-copy" onclick="copiarLista()">Copiar Lista</button>
+    </div>
+
+    <script>
+        function copiarLista() {
+            let texto = "Lista de compras com melhores preços:\n\n";
+            {% for mercado, itens in resultado_por_mercado.items() %}
+                texto += "🛒 {{ mercado }}:\n";
+                {% for item in itens %}
+                    texto += "- {{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)\n";
+                {% endfor %}
+                texto += "\n";
+            {% endfor %}
+            texto += "💰 Total gasto: R$ {{ gasto_total }}\n";
+            texto += "🎉 Economia total: R$ {{ economia_total }}";
+
+            navigator.clipboard.writeText(texto).then(function() {
+                alert("Lista copiada com sucesso!");
+            }, function(err) {
+                alert("Erro ao copiar: ", err);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Pr3cin - Escolha seus produtos</title>
+    <style>
+        body { font-family: Arial; margin: 40px; background: #f7f7f7; }
+        .produto { margin-bottom: 10px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+        h1 { text-align: center; color: #1a73e8; }
+        input[type="submit"] { margin-top: 20px; padding: 10px 20px; background: #1a73e8; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        input[type="number"] { width: 50px; margin-left: 10px; }
+        input[type="text"] { width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; }
+    </style>
+    <script>
+        function filtrarProdutos() {
+            const filtro = document.getElementById("filtro").value.toLowerCase();
+            const produtos = document.querySelectorAll(".produto");
+
+            produtos.forEach(p => {
+                const texto = p.innerText.toLowerCase();
+                p.style.display = texto.includes(filtro) ? "block" : "none";
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Escolha os Produtos</h1>
+        <input type="text" id="filtro" onkeyup="filtrarProdutos()" placeholder="Buscar produto...">
+
+        <form method="post" action="/resultado">
+            {% for produto in produtos %}
+                <div class="produto">
+                    <input type="checkbox" name="produto" value="{{ produto }}">
+                    {{ produto }}
+                    <input type="number" name="quantidade" min="1" value="1">
+                </div>
+            {% endfor %}
+            <input type="submit" value="Enviar Lista">
+        </form>
+    </div>
+</body>
+</html>
