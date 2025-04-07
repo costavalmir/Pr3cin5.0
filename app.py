@@ -29,11 +29,7 @@ def resultado():
     gasto_total = 0
 
     for item, qtde in zip(itens_selecionados, quantidades):
-        try:
-            qtde = int(qtde)
-        except ValueError:
-            qtde = 1
-
+        qtde = int(qtde) if qtde.isdigit() else 1
         dados_item = df[df["Descrição do Item"] == item]
 
         if not dados_item.empty:
