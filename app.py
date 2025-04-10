@@ -1,23 +1,54 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
 import os
 
 app = Flask(__name__)
+app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seguro
 
-# Carrega os dados do Excel
+# Carrega os dados do Excel de compras
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
-
-# Remove duplicatas e ordena os produtos
 produtos_unicos = sorted(df["Descrição do Item"].dropna().unique())
+
+# Função para validar o login via Excel
+def validar_login(usuario, senha):
+    usuarios_df = pd.read_excel("usuarios.xlsx")
+    usuario = usuario.strip().lower()
+    senha = senha.strip()
+    for _, row in usuarios_df.iterrows():
+        if str(row["usuario"]).strip().lower() == usuario and str(row["senha"]).strip() == senha:
+            return True
+    return False
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        senha = request.form["senha"]
+        if validar_login(usuario, senha):
+            session["usuario"] = usuario
+            return redirect(url_for("index"))
+        else:
+            return render_template("login.html", erro="Usuário ou senha inválidos.")
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop("usuario", None)
+    return redirect(url_for("login"))
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    if "usuario" not in session:
+        return redirect(url_for("login"))
     return render_template("index.html", produtos=produtos_unicos)
 
 @app.route("/resultado", methods=["POST"])
 def resultado():
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+
     itens_selecionados = request.form.getlist("produto")
     quantidades = request.form.getlist("quantidade")
 
