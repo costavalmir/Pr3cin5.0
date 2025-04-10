@@ -10,10 +10,13 @@
         label, input, select { display: block; margin-bottom: 10px; width: 100%; }
         .item-selecionado { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #f0f0f0; padding: 10px; border-radius: 5px; }
         .btn-remover { background: #e53935; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .btn-adicionar, .btn-enviar {
+        .btn-adicionar, .btn-enviar, .btn-sair {
             background: #1a73e8; color: white; border: none;
             padding: 10px 20px; border-radius: 5px;
             cursor: pointer; margin-top: 10px;
+        }
+        .btn-sair {
+            background: #f44336;
         }
         #busca { padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 20px; }
     </style>
@@ -41,6 +44,7 @@
 
             <button type="submit" class="btn-enviar">Ver Melhor Preço</button>
         </form>
+        <button class="btn-sair" onclick="window.location.href='/login'">Sair</button>
     </div>
 
     <script>
@@ -57,12 +61,11 @@
 
             const itemDiv = document.createElement("div");
             itemDiv.className = "item-selecionado";
-            itemDiv.innerHTML = `
-                <span>${produto} - ${quantidade} un.</span>
+            itemDiv.innerHTML = 
+                `<span>${produto} - ${quantidade} un.</span>
                 <button type="button" class="btn-remover" onclick="removerProduto(this)">Remover</button>
                 <input type="hidden" name="produto" value="${produto}">
-                <input type="hidden" name="quantidade" value="${quantidade}">
-            `;
+                <input type="hidden" name="quantidade" value="${quantidade}">`;
             listaItens.appendChild(itemDiv);
         }
 
@@ -79,3 +82,4 @@
     </script>
 </body>
 </html>
+
