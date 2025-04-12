@@ -84,7 +84,8 @@ def resultado():
                 "quantidade": qtde,
                 "local": local,
                 "valor_unitario": round(valor_unitario_barato, 2),
-                "valor_total": round(valor_total_barato, 2)
+                "valor_total": round(valor_total_barato, 2),
+                "data_oferta": local_mais_barato.get("data da oferta", "")
             }
 
             if local not in resultado_por_mercado:
@@ -98,6 +99,10 @@ def resultado():
         economia_total=round(economia_total, 2),
         gasto_total=round(gasto_total, 2)
     )
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
