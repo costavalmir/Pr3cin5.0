@@ -44,7 +44,10 @@
             <h2>{{ mercado }}</h2>
             <ul>
                 {% for item in itens %}
-                    <li>{{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)</li>
+                    <li>
+                        {{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)<br>
+                        <small>⏰ Oferta reportada em: {{ item.data_oferta }}</small>
+                    </li>
                 {% endfor %}
             </ul>
         {% endfor %}
@@ -70,6 +73,7 @@
                 texto += "🛒 {{ mercado }}:\n";
                 {% for item in itens %}
                     texto += "- {{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)\n";
+                    texto += "  ⏰ Oferta reportada em: {{ item.data_oferta }}\n";
                 {% endfor %}
                 texto += "\n";
             {% endfor %}
