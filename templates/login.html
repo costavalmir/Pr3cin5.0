@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Pr3cin</title>
     <style>
         body {
@@ -11,6 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
 
         .login-container {
@@ -18,7 +20,10 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            width: 350px;
+            width: 100%;
+            max-width: 350px;
+            box-sizing: border-box;
+            margin: 20px;
         }
 
         h2 {
@@ -37,6 +42,7 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 6px;
+            box-sizing: border-box;
         }
 
         button {
@@ -47,6 +53,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            margin-top: 10px;
         }
 
         .erro {
@@ -55,6 +62,13 @@
             margin-top: 10px;
         }
 
+        @media (max-height: 500px) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+                height: auto;
+            }
+        }
     </style>
 </head>
 <body>
