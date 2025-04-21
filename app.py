@@ -122,6 +122,10 @@ def cadastro():
         email = request.form["email"]
         senha = request.form["senha"]
         salvar_usuario(nome, email, senha)
+
+        # Chama a função para enviar o e-mail após o cadastro
+        enviar_email(nome, email)
+
         return redirect(url_for("sucesso"))
     return render_template("cadastro.html")
 
@@ -129,10 +133,11 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
+# Função para enviar e-mail
 def enviar_email(nome, email):
     remetente = "costavalmir2011@gmail.com"
     senha = "knnazlcxoxeuxklj"
-    destinatario = "Pr3cin.econ@outlook.com"
+    destinatario = "Pr3cin.econ@outlook.com"  # Modifique para o e-mail desejado
 
     corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
     msg = MIMEText(corpo)
