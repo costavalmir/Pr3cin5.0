@@ -21,8 +21,8 @@
         }
         .usuario-logado {
             position: absolute;
-            top: -40px;
-            left: 0;
+            top: 10px;
+            left: 20px;
             font-weight: bold;
             color: #1a73e8;
         }
@@ -90,7 +90,9 @@
 </head>
 <body>
     <div class="container">
-        <div class="usuario-logado">Olá, {{ session['usuario'] }} 👋</div>
+        {% if session['usuario'] %}
+            <div class="usuario-logado">Olá, {{ session['usuario'] }} 👋</div>
+        {% endif %}
         <h1>Pr3cin</h1>
         <form id="form-produtos" action="/resultado" method="post">
             <label for="busca">Buscar produto:</label>
@@ -112,7 +114,7 @@
 
             <button type="submit" class="btn-enviar">Ver Melhor Preço</button>
         </form>
-        <button class="btn-sair" onclick="window.location.href='/login'">Sair</button>
+        <button class="btn-sair" onclick="window.location.href='/logout'">Sair</button>
     </div>
 
     <script>
