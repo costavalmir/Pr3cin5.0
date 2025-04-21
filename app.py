@@ -2,10 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
 import os
 import smtplib
+import sqlite3
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seguro
+app.secret_key = 'chave_super_secreta'
 
 # Carrega os dados do Excel de compras
 df = pd.read_excel("compras_05-04-2025.xlsx")
@@ -13,15 +14,27 @@ df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
 produtos_unicos = sorted(df["Descrição do Item"].dropna().unique())
 
-# Função para validar o login via Excel
+# ========================
+# BANCO DE DADOS - USUÁRIOS
+# ========================
+def salvar_usuario(nome, email, senha):
+    conn = sqlite3.connect("usuarios.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)", (nome, email, senha))
+    conn.commit()
+    conn.close()
+
 def validar_login(usuario, senha):
-    usuarios_df = pd.read_excel("usuarios.xlsx")
-    usuario = usuario.strip().lower()
-    senha = senha.strip()
-    for _, row in usuarios_df.iterrows():
-        if str(row["usuario"]).strip().lower() == usuario and str(row["senha"]).strip() == senha:
-            return True
-    return False
+    conn = sqlite3.connect("usuarios.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM usuarios WHERE email = ? AND senha = ?", (usuario.strip().lower(), senha.strip()))
+    user = c.fetchone()
+    conn.close()
+    return user is not None
+
+# ========================
+# ROTAS
+# ========================
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -107,7 +120,8 @@ def cadastro():
     if request.method == "POST":
         nome = request.form["nome"]
         email = request.form["email"]
-        enviar_email(nome, email)
+        senha = request.form["senha"]
+        salvar_usuario(nome, email, senha)
         return redirect(url_for("sucesso"))
     return render_template("cadastro.html")
 
@@ -116,8 +130,8 @@ def sucesso():
     return render_template("sucesso.html")
 
 def enviar_email(nome, email):
-    remetente = "costavalmir2011@gmail.com"  # Substitua pelo seu e-mail
-    senha = "knnazlcxoxeuxklj"      # Senha de aplicativo gerada
+    remetente = "costavalmir2011@gmail.com"
+    senha = "knnazlcxoxeuxklj"
     destinatario = "Pr3cin.econ@outlook.com"
 
     corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
@@ -133,5 +147,3 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
-
-
