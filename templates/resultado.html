@@ -135,6 +135,11 @@
         </div>
 
         <button class="btn-sair" onclick="window.location.href='/login'">Sair</button>
+
+        <!-- Novo botão para compartilhar no WhatsApp -->
+        <div class="botoes-voltar">
+            <button class="btn" onclick="compartilharWhatsApp()">Compartilhe a Pr3cin com seus amigos</button>
+        </div>
     </div>
 
     <script>
@@ -156,6 +161,24 @@
             }, function(err) {
                 alert("Erro ao copiar: ", err);
             });
+        }
+
+        function compartilharWhatsApp() {
+            let texto = "Confira a Pr3cin - Comparador de Preços! 💸\n\n";
+            {% for mercado, itens in resultado_por_mercado.items() %}
+                texto += "🛒 {{ mercado }}:\n";
+                {% for item in itens %}
+                    texto += "- {{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)\n";
+                    texto += "  ⏰ Oferta reportada em: {{ item.data_oferta }}\n";
+                {% endfor %}
+                texto += "\n";
+            {% endfor %}
+            texto += "💰 Total gasto: R$ {{ gasto_total }}\n";
+            texto += "🎉 Economia total: R$ {{ economia_total }}";
+
+            // URL para o WhatsApp com a mensagem
+            let url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
+            window.open(url, "_blank");
         }
     </script>
 </body>
