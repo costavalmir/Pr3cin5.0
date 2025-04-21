@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - Pr3cin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .cadastro-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1a73e8;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .erro {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cadastro-container">
+        <h2>Cadastro</h2>
+        <form method="POST" onsubmit="return validarSenha()">
+            <input type="text" name="nome" placeholder="Nome" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" id="senha" name="senha" placeholder="Senha (8 dígitos)" required>
+            <div id="mensagem-erro" class="erro"></div>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        function validarSenha() {
+            const senha = document.getElementById("senha").value;
+            const erroDiv = document.getElementById("mensagem-erro");
+            const regex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8}$/;
+
+            if (!regex.test(senha)) {
+                erroDiv.textContent = "A senha deve ter exatamente 8 caracteres, com letras e números.";
+                return false;
+            }
+
+            erroDiv.textContent = "";
+            return true;
+        }
+    </script>
+</body>
+</html>
