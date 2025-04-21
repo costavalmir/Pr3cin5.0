@@ -116,9 +116,9 @@ def sucesso():
     return render_template("sucesso.html")
 
 def enviar_email(nome, email):
-    remetente = "costavalmir2011@gmail.com"          # <- substitua pelo seu e-mail
-    senha = "costa7190valmirir"         # <- senha de app do Gmail
-    destinatario = "pr3cin.econ@outlook.com"
+    remetente = "costavalmir2011@gmail.com"  # Substitua pelo seu e-mail
+    senha = "knnazlcxoxeuxklj"      # Senha de aplicativo gerada
+    destinatario = "Pr3cin.econ@outlook.com"
 
     corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
     msg = MIMEText(corpo)
@@ -133,3 +133,4 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
+
