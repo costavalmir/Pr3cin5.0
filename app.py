@@ -5,43 +5,23 @@ import smtplib
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-app.secret_key = 'chave_super_secreta'
+app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seguro
 
-# ========================
-# PLANILHA DE USUÁRIOS
-# ========================
-usuarios_arquivo = "usuarios.xlsx"
-if not os.path.exists(usuarios_arquivo):
-    pd.DataFrame(columns=["nome", "email", "senha"]).to_excel(usuarios_arquivo, index=False)
-
-usuarios_df = pd.read_excel(usuarios_arquivo)
-
-def salvar_usuario(nome, email, senha):
-    global usuarios_df
-    novo_usuario = pd.DataFrame([[nome, email.strip().lower(), senha.strip()]], columns=["nome", "email", "senha"])
-    usuarios_df = pd.concat([usuarios_df, novo_usuario], ignore_index=True)
-    usuarios_df.to_excel(usuarios_arquivo, index=False)
-
-def validar_login(usuario, senha):
-    usuario = usuario.strip().lower()
-    senha = senha.strip()
-    usuarios_filtrados = usuarios_df[
-        (usuarios_df["email"].str.strip().str.lower() == usuario) &
-        (usuarios_df["senha"].astype(str).str.strip() == senha)
-    ]
-    return not usuarios_filtrados.empty
-
-# ========================
-# DADOS DE COMPRAS
-# ========================
+# Carrega os dados do Excel de compras
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
 produtos_unicos = sorted(df["Descrição do Item"].dropna().unique())
 
-# ========================
-# ROTAS
-# ========================
+# Função para validar o login via Excel
+def validar_login(usuario, senha):
+    usuarios_df = pd.read_excel("usuarios.xlsx")
+    usuario = usuario.strip().lower()
+    senha = senha.strip()
+    for _, row in usuarios_df.iterrows():
+        if str(row["usuario"]).strip().lower() == usuario and str(row["senha"]).strip() == senha:
+            return True
+    return False
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -127,8 +107,6 @@ def cadastro():
     if request.method == "POST":
         nome = request.form["nome"]
         email = request.form["email"]
-        senha = request.form["senha"]
-        salvar_usuario(nome, email, senha)
         enviar_email(nome, email)
         return redirect(url_for("sucesso"))
     return render_template("cadastro.html")
@@ -137,12 +115,9 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
-# ========================
-# ENVIO DE E-MAIL
-# ========================
-def enviar_email(nome, email, senha):
-    remetente = "costavalmir2011@gmail.com"
-    senha = "knnazlcxoxeuxklj"
+def enviar_email(nome, email):
+    remetente = "costavalmir2011@gmail.com"  # Substitua pelo seu e-mail
+    senha = "knnazlcxoxeuxklj"      # Senha de aplicativo gerada
     destinatario = "Pr3cin.econ@outlook.com"
 
     corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
@@ -155,9 +130,6 @@ def enviar_email(nome, email, senha):
         servidor.login(remetente, senha)
         servidor.send_message(msg)
 
-# ========================
-# RODAR APP
-# ========================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
