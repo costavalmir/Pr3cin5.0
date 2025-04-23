@@ -11,7 +11,6 @@ app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seg
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
-produtos_unicos = sorted(df["Descrição do Item"].dropna().unique())
 
 # Função para validar o login via Excel
 def validar_login(usuario, senha):
@@ -44,7 +43,18 @@ def logout():
 def index():
     if "usuario" not in session:
         return redirect(url_for("login"))
-    return render_template("index.html", produtos=produtos_unicos)
+
+    produtos_exibicao = []
+    produtos_vistos = set()
+
+    for _, row in df.iterrows():
+        nome = row["Descrição do Item"]
+        imagem = row.get("imagem", "")
+        if nome not in produtos_vistos:
+            produtos_exibicao.append({"nome": nome, "imagem": imagem})
+            produtos_vistos.add(nome)
+
+    return render_template("index.html", produtos=produtos_exibicao)
 
 @app.route("/resultado", methods=["POST"])
 def resultado():
@@ -107,8 +117,7 @@ def cadastro():
     if request.method == "POST":
         nome = request.form["nome"]
         email = request.form["email"]
-        senha_usuario = request.form["senha"]
-        enviar_email(nome, email, senha_usuario)
+        enviar_email(nome, email)
         return redirect(url_for("sucesso"))
     return render_template("cadastro.html")
 
@@ -116,18 +125,12 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
-def enviar_email(nome, email, senha_usuario):
-    remetente = "costavalmir2011@gmail.com"  # Seu e-mail
-    senha = "knnazlcxoxeuxklj"               # Senha de app específica
-    destinatario = "Pr3cin.econ@outlook.com" # E-mail de destino
+def enviar_email(nome, email):
+    remetente = "costavalmir2011@gmail.com"
+    senha = "knnazlcxoxeuxklj"
+    destinatario = "Pr3cin.econ@outlook.com"
 
-    corpo = (
-        f"Novo cadastro:\n\n"
-        f"Nome: {nome}\n"
-        f"Email: {email}\n"
-        f"Senha: {senha_usuario}"
-    )
-
+    corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
     msg = MIMEText(corpo)
     msg["Subject"] = "Novo Cadastro no Pr3cin"
     msg["From"] = remetente
