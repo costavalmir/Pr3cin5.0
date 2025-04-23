@@ -46,6 +46,11 @@
             padding: 10px;
             border-radius: 5px;
         }
+        .item-selecionado img {
+            width: 50px;
+            height: auto;
+            margin-right: 10px;
+        }
         .btn-remover {
             background: #e53935;
             color: white;
@@ -100,8 +105,8 @@
 
             <label for="produto">Produto:</label>
             <select id="produto">
-                {% for produto in produtos %}
-                    <option value="{{ produto }}">{{ produto }}</option>
+                {% for p in produtos %}
+                    <option value="{{ p.nome }}">{{ p.nome }}</option>
                 {% endfor %}
             </select>
 
@@ -121,7 +126,12 @@
         const listaItens = document.getElementById("lista-itens");
         const produtoSelect = document.getElementById("produto");
         const quantidadeInput = document.getElementById("quantidade");
-        const form = document.getElementById("form-produtos");
+
+        const imagens = {
+            {% for p in produtos %}
+                "{{ p.nome }}": "{{ p.imagem }}",
+            {% endfor %}
+        };
 
         function adicionarProduto() {
             const produto = produtoSelect.value;
@@ -129,13 +139,19 @@
 
             if (!produto || quantidade < 1) return;
 
+            const imagemUrl = imagens[produto] || "";
+
             const itemDiv = document.createElement("div");
             itemDiv.className = "item-selecionado";
-            itemDiv.innerHTML = 
-                `<span>${produto} - ${quantidade} un.</span>
+            itemDiv.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <img src="${imagemUrl}" alt="${produto}">
+                    <span>${produto} - ${quantidade} un.</span>
+                </div>
                 <button type="button" class="btn-remover" onclick="removerProduto(this)">Remover</button>
                 <input type="hidden" name="produto" value="${produto}">
-                <input type="hidden" name="quantidade" value="${quantidade}">`;
+                <input type="hidden" name="quantidade" value="${quantidade}">
+            `;
             listaItens.appendChild(itemDiv);
         }
 
