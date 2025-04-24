@@ -136,10 +136,34 @@ def upload_fotos():
 
     if request.method == "POST":
         # Aqui você pode processar as fotos enviadas
-        # Caso necessário, adicionar a lógica para salvar as fotos ou qualquer outra coisa
         return redirect(url_for("sucesso"))
 
     return render_template("upload_fotos.html", itens=itens_aleatorios)
+
+@app.route("/mapeamento", methods=["GET", "POST"])
+def mapeamento():
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        total_itens = int(request.form.get("total_itens", 0))
+        precos = []
+        for i in range(total_itens):
+            nome = request.form.get(f"nome_{i}")
+            preco = request.form.get(f"preco_{i}")
+            if nome and preco:
+                precos.append((nome, preco))
+
+        # Aqui você pode salvar ou processar os dados como quiser
+        print("Preços mapeados:")
+        for nome, preco in precos:
+            print(f"{nome}: R$ {preco}")
+
+        return redirect(url_for("upload_fotos"))
+
+    # GET: mostra 30 itens aleatórios
+    itens_aleatorios = random.sample(df["Descrição do Item"].tolist(), 30)
+    return render_template("mapeamento.html", itens=itens_aleatorios)
 
 def enviar_email(nome, email):
     remetente = "costavalmir2011@gmail.com"
