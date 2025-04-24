@@ -1,21 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
 import os
+import random
 import smtplib
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-app.secret_key = 'chave_super_secreta'
-
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seguro
 
 # Carrega os dados do Excel de compras
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
 
+# Função para validar o login via Excel
 def validar_login(usuario, senha):
     usuarios_df = pd.read_excel("usuarios.xlsx")
     usuario = usuario.strip().lower()
@@ -42,7 +40,7 @@ def logout():
     session.pop("usuario", None)
     return redirect(url_for("login"))
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
     if "usuario" not in session:
         return redirect(url_for("login"))
@@ -128,37 +126,20 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
-@app.route("/mapeamento", methods=["GET", "POST"])
-def mapeamento():
-    if request.method == "POST":
-        total_itens = int(request.form["total_itens"])
-        dados = []
-        for i in range(total_itens):
-            nome = request.form.get(f"nome_{i}")
-            preco = request.form.get(f"preco_{i}")
-            if nome and preco:
-                dados.append((nome, preco))
-
-        session["dados_mapeamento"] = dados
-        return redirect(url_for("upload_fotos"))
-
-    produtos = df["Descrição do Item"].drop_duplicates().tolist()
-    return render_template("mapeamento.html", itens=produtos)
-
 @app.route("/upload_fotos", methods=["GET", "POST"])
 def upload_fotos():
-    if request.method == "POST":
-        arquivos = request.files.getlist("fotos")
-        for arquivo in arquivos:
-            if arquivo.filename != "":
-                caminho = os.path.join(UPLOAD_FOLDER, secure_filename(arquivo.filename))
-                arquivo.save(caminho)
-        return redirect(url_for("agradecimento"))
-    return render_template("upload_fotos.html")
+    if "usuario" not in session:
+        return redirect(url_for("login"))
 
-@app.route("/agradecimento")
-def agradecimento():
-    return render_template("agradecimento.html")
+    # Selecionando 30 itens aleatórios da lista de compras
+    itens_aleatorios = random.sample(df["Descrição do Item"].tolist(), 30)
+
+    if request.method == "POST":
+        # Aqui você pode processar as fotos enviadas
+        # Caso necessário, adicionar a lógica para salvar as fotos ou qualquer outra coisa
+        return redirect(url_for("sucesso"))
+
+    return render_template("upload_fotos.html", itens=itens_aleatorios)
 
 def enviar_email(nome, email):
     remetente = "costavalmir2011@gmail.com"
