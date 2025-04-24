@@ -8,9 +8,9 @@ app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seguro
 
 # Carrega os dados do Excel de compras
-df = pd.read_excel("compras_05-04-2025.xlsx")
-df["Descrição do Item"] = df["Descrição do Item"].astype(str)
-df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
+compras_df = pd.read_excel("compras_05-04-2025.xlsx")
+compras_df["Descrição do Item"] = compras_df["Descrição do Item"].astype(str)
+compras_df["Valor Unitário"] = pd.to_numeric(compras_df["Valor Unitário"], errors="coerce")
 
 # Função para validar o login via Excel
 def validar_login(usuario, senha):
@@ -47,7 +47,7 @@ def index():
     produtos_exibicao = []
     produtos_vistos = set()
 
-    for _, row in df.iterrows():
+    for _, row in compras_df.iterrows():
         nome = row["Descrição do Item"]
         imagem = row.get("imagem", "")
         if nome not in produtos_vistos:
@@ -73,7 +73,7 @@ def resultado():
 
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
-        dados_item = df[df["Descrição do Item"] == item]
+        dados_item = compras_df[compras_df["Descrição do Item"] == item]
 
         if not dados_item.empty:
             dados_item = dados_item.sort_values("Valor Unitário")
@@ -125,14 +125,29 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
-def enviar_email(nome, email):
+@app.route("/mapeamento", methods=["GET", "POST"])
+def mapeamento():
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        precos = request.form.to_dict()
+        corpo = "Mapeamento de Preços:\n\n"
+        for item, preco in precos.items():
+            corpo += f"{item}: R$ {preco}\n"
+        enviar_email("Mapeamento de Preços", corpo, assunto="Mapeamento de Preços")
+        return redirect(url_for("sucesso"))
+
+    itens = compras_df["Descrição do Item"].dropna().unique().tolist()
+    return render_template("mapeamento.html", itens=itens)
+
+def enviar_email(nome, conteudo, assunto="Novo Cadastro no Pr3cin"):
     remetente = "costavalmir2011@gmail.com"
     senha = "knnazlcxoxeuxklj"
     destinatario = "Pr3cin.econ@outlook.com"
 
-    corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
-    msg = MIMEText(corpo)
-    msg["Subject"] = "Novo Cadastro no Pr3cin"
+    msg = MIMEText(conteudo)
+    msg["Subject"] = assunto
     msg["From"] = remetente
     msg["To"] = destinatario
 
