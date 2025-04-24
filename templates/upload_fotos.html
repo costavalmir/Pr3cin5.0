@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anexar Fotos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        .btn-enviar {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Anexar Fotos dos Preços</h1>
+        <p>Por favor, anexe fotos dos preços de 30 itens.</p>
+        <form action="/upload_fotos" method="POST" enctype="multipart/form-data">
+            <input type="file" name="fotos" multiple required accept="image/*">
+            <button type="submit" class="btn-enviar">Enviar Fotos</button>
+        </form>
+    </div>
+</body>
+</html>
