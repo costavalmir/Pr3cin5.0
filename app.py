@@ -1,18 +1,21 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.utils import secure_filename
 import pandas as pd
 import os
 import smtplib
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seguro
+app.secret_key = 'chave_super_secreta'
+
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Carrega os dados do Excel de compras
-compras_df = pd.read_excel("compras_05-04-2025.xlsx")
-compras_df["Descrição do Item"] = compras_df["Descrição do Item"].astype(str)
-compras_df["Valor Unitário"] = pd.to_numeric(compras_df["Valor Unitário"], errors="coerce")
+df = pd.read_excel("compras_05-04-2025.xlsx")
+df["Descrição do Item"] = df["Descrição do Item"].astype(str)
+df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
 
-# Função para validar o login via Excel
 def validar_login(usuario, senha):
     usuarios_df = pd.read_excel("usuarios.xlsx")
     usuario = usuario.strip().lower()
@@ -39,7 +42,7 @@ def logout():
     session.pop("usuario", None)
     return redirect(url_for("login"))
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
     if "usuario" not in session:
         return redirect(url_for("login"))
@@ -47,7 +50,7 @@ def index():
     produtos_exibicao = []
     produtos_vistos = set()
 
-    for _, row in compras_df.iterrows():
+    for _, row in df.iterrows():
         nome = row["Descrição do Item"]
         imagem = row.get("imagem", "")
         if nome not in produtos_vistos:
@@ -73,7 +76,7 @@ def resultado():
 
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
-        dados_item = compras_df[compras_df["Descrição do Item"] == item]
+        dados_item = df[df["Descrição do Item"] == item]
 
         if not dados_item.empty:
             dados_item = dados_item.sort_values("Valor Unitário")
@@ -127,27 +130,44 @@ def sucesso():
 
 @app.route("/mapeamento", methods=["GET", "POST"])
 def mapeamento():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
-
     if request.method == "POST":
-        precos = request.form.to_dict()
-        corpo = "Mapeamento de Preços:\n\n"
-        for item, preco in precos.items():
-            corpo += f"{item}: R$ {preco}\n"
-        enviar_email("Mapeamento de Preços", corpo, assunto="Mapeamento de Preços")
-        return redirect(url_for("sucesso"))
+        total_itens = int(request.form["total_itens"])
+        dados = []
+        for i in range(total_itens):
+            nome = request.form.get(f"nome_{i}")
+            preco = request.form.get(f"preco_{i}")
+            if nome and preco:
+                dados.append((nome, preco))
 
-    itens = compras_df["Descrição do Item"].dropna().unique().tolist()
-    return render_template("mapeamento.html", itens=itens)
+        session["dados_mapeamento"] = dados
+        return redirect(url_for("upload_fotos"))
 
-def enviar_email(nome, conteudo, assunto="Novo Cadastro no Pr3cin"):
+    produtos = df["Descrição do Item"].drop_duplicates().tolist()
+    return render_template("mapeamento.html", itens=produtos)
+
+@app.route("/upload_fotos", methods=["GET", "POST"])
+def upload_fotos():
+    if request.method == "POST":
+        arquivos = request.files.getlist("fotos")
+        for arquivo in arquivos:
+            if arquivo.filename != "":
+                caminho = os.path.join(UPLOAD_FOLDER, secure_filename(arquivo.filename))
+                arquivo.save(caminho)
+        return redirect(url_for("agradecimento"))
+    return render_template("upload_fotos.html")
+
+@app.route("/agradecimento")
+def agradecimento():
+    return render_template("agradecimento.html")
+
+def enviar_email(nome, email):
     remetente = "costavalmir2011@gmail.com"
     senha = "knnazlcxoxeuxklj"
     destinatario = "Pr3cin.econ@outlook.com"
 
-    msg = MIMEText(conteudo)
-    msg["Subject"] = assunto
+    corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
+    msg = MIMEText(corpo)
+    msg["Subject"] = "Novo Cadastro no Pr3cin"
     msg["From"] = remetente
     msg["To"] = destinatario
 
