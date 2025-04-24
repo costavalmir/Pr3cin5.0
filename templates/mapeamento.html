@@ -27,6 +27,9 @@
             margin-bottom: 10px;
             box-sizing: border-box;
         }
+        input[type="number"] {
+            padding: 10px;
+        }
         .btn-enviar {
             background: #1a73e8;
             color: white;
@@ -41,10 +44,10 @@
 <body>
     <div class="container">
         <h1>Mapeamento de Preços</h1>
-        <form method="POST" action="/mapeamento">
+        <form method="POST" action="/mapeamento" onsubmit="return validarFormulario()">
             {% for item in itens %}
                 <label>{{ item }}</label>
-                <input type="number" step="0.01" name="preco_{{ loop.index0 }}" placeholder="Digite o valor">
+                <input type="number" step="0.01" name="preco_{{ loop.index0 }}" placeholder="Digite o valor" required>
                 <input type="hidden" name="nome_{{ loop.index0 }}" value="{{ item }}">
             {% endfor %}
             <input type="hidden" name="total_itens" value="{{ itens|length }}">
