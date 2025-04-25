@@ -59,7 +59,7 @@
             {% for item in itens %}
                 <div class="item">
                     <label for="preco_{{ loop.index0 }}">{{ item }}</label>
-                    <input type="number" step="0.01" name="preco_{{ loop.index0 }}" id="preco_{{ loop.index0 }}" placeholder="Digite o valor" required>
+                    <input type="number" step="0.01" name="preco_{{ loop.index0 }}" id="preco_{{ loop.index0 }}" placeholder="Digite o valor">
                     <input type="hidden" name="nome_{{ loop.index0 }}" value="{{ item }}">
                 </div>
             {% endfor %}
@@ -75,3 +75,4 @@
     </div>
 </body>
 </html>
+
