@@ -28,7 +28,7 @@
         label {
             font-weight: bold;
         }
-        input[type="number"] {
+        input[type="number"], input[type="file"] {
             padding: 8px;
             width: 100%;
             margin-top: 5px;
@@ -55,7 +55,7 @@
 <body>
     <div class="container">
         <h1>Mapeamento de Preços</h1>
-        <form method="POST" action="/mapeamento">
+        <form method="POST" action="/mapeamento" enctype="multipart/form-data">
             {% for item in itens %}
                 <div class="item">
                     <label for="preco_{{ loop.index0 }}">{{ item }}</label>
@@ -64,6 +64,12 @@
                 </div>
             {% endfor %}
             <input type="hidden" name="total_itens" value="{{ itens|length }}">
+            
+            <div class="item">
+                <label for="fotos">Anexar fotos (opcional):</label>
+                <input type="file" name="fotos" id="fotos" multiple>
+            </div>
+
             <button class="btn-enviar" type="submit">Enviar</button>
         </form>
     </div>
