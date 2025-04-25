@@ -1,19 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
 import os
-import random
 import smtplib
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-app.secret_key = 'chave_super_secreta'  # Recomendado alterar para algo mais seguro
+app.secret_key = 'chave_super_secreta'
 
-# Carrega os dados do Excel de compras
+# Carregamento do Excel com produtos
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
 
-# Função para validar o login via Excel
 def validar_login(usuario, senha):
     usuarios_df = pd.read_excel("usuarios.xlsx")
     usuario = usuario.strip().lower()
@@ -131,11 +129,8 @@ def upload_fotos():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
-    # Selecionando 30 itens aleatórios da lista de compras
-    itens_aleatorios = random.sample(df["Descrição do Item"].tolist(), 30)
-
+    itens_aleatorios = df["Descrição do Item"].dropna().unique().tolist()
     if request.method == "POST":
-        # Aqui você pode processar as fotos enviadas
         return redirect(url_for("sucesso"))
 
     return render_template("upload_fotos.html", itens=itens_aleatorios)
@@ -154,16 +149,15 @@ def mapeamento():
             if nome and preco:
                 precos.append((nome, preco))
 
-        # Aqui você pode salvar ou processar os dados como quiser
         print("Preços mapeados:")
         for nome, preco in precos:
             print(f"{nome}: R$ {preco}")
 
         return redirect(url_for("upload_fotos"))
 
-    # GET: mostra 30 itens aleatórios
-    itens_aleatorios = random.sample(df["Descrição do Item"].tolist(), 30)
-    return render_template("mapeamento.html", itens=itens_aleatorios)
+    # GET: mostra todos os itens únicos do Excel
+    itens_completos = df["Descrição do Item"].dropna().unique().tolist()
+    return render_template("mapeamento.html", itens=itens_completos)
 
 def enviar_email(nome, email):
     remetente = "costavalmir2011@gmail.com"
@@ -183,3 +177,4 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
+
