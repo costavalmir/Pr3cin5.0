@@ -51,9 +51,9 @@
         <h1>Anexar Fotos dos Itens</h1>
         <form action="/upload_fotos" method="POST" enctype="multipart/form-data">
             <div class="itens-lista">
-                <label>Envie fotos dos preços de 30 itens mapeados:</label>
+                <label>Envie fotos dos preços de 10 itens mapeados:</label>
 
-                {% for item in itens %}
+                {% for item in itens[:10] %}
                     <div class="item">
                         <label>{{ item }}</label>
                         <input type="file" name="foto_{{ loop.index0 }}" accept="image/*" required>
@@ -65,3 +65,5 @@
     </div>
 </body>
 </html>
+
+
