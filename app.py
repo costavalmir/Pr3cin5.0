@@ -125,14 +125,13 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
-# 🔽 ROTA MODIFICADA: SOMENTE ESTA!
 @app.route("/upload_fotos", methods=["GET", "POST"])
 def upload_fotos():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
     if request.method == "POST":
-        return redirect(url_for("sucesso"))
+        return redirect(url_for("agradecimento"))
 
     # Seleciona 30 itens únicos aleatórios do Excel
     itens_unicos = df["Descrição do Item"].dropna().unique().tolist()
@@ -160,9 +159,12 @@ def mapeamento():
 
         return redirect(url_for("upload_fotos"))
 
-    # GET: mostra todos os itens únicos do Excel
     itens_completos = df["Descrição do Item"].dropna().unique().tolist()
     return render_template("mapeamento.html", itens=itens_completos)
+
+@app.route("/agradecimento")
+def agradecimento():
+    return render_template("agradecimento.html")
 
 def enviar_email(nome, email):
     remetente = "costavalmir2011@gmail.com"
