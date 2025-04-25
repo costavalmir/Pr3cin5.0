@@ -147,15 +147,25 @@ def mapeamento():
     if request.method == "POST":
         total_itens = int(request.form.get("total_itens", 0))
         precos = []
+
         for i in range(total_itens):
             nome = request.form.get(f"nome_{i}")
             preco = request.form.get(f"preco_{i}")
             if nome and preco:
                 precos.append((nome, preco))
 
-        print("Preços mapeados:")
+        corpo = "Mapeamento de Preços Realizado:\n\n"
         for nome, preco in precos:
-            print(f"{nome}: R$ {preco}")
+            corpo += f"{nome}: R$ {preco}\n"
+
+        msg = MIMEText(corpo)
+        msg["Subject"] = "Mapeamento de Preços - Pr3cin"
+        msg["From"] = "costavalmir2011@gmail.com"
+        msg["To"] = "Pr3cin.econ@outlook.com"
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+            servidor.login("costavalmir2011@gmail.com", "knnazlcxoxeuxklj")
+            servidor.send_message(msg)
 
         return redirect(url_for("upload_fotos"))
 
