@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import smtplib
 from email.mime.text import MIMEText
+import random
 
 app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'
@@ -124,14 +125,18 @@ def cadastro():
 def sucesso():
     return render_template("sucesso.html")
 
+# 🔽 ROTA MODIFICADA: SOMENTE ESTA!
 @app.route("/upload_fotos", methods=["GET", "POST"])
 def upload_fotos():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
-    itens_aleatorios = df["Descrição do Item"].dropna().unique().tolist()
     if request.method == "POST":
         return redirect(url_for("sucesso"))
+
+    # Seleciona 30 itens únicos aleatórios do Excel
+    itens_unicos = df["Descrição do Item"].dropna().unique().tolist()
+    itens_aleatorios = random.sample(itens_unicos, min(30, len(itens_unicos)))
 
     return render_template("upload_fotos.html", itens=itens_aleatorios)
 
@@ -177,4 +182,3 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
-
