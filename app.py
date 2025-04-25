@@ -3,6 +3,9 @@ import pandas as pd
 import os
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 import random
 
 app = Flask(__name__)
@@ -131,6 +134,25 @@ def upload_fotos():
         return redirect(url_for("login"))
 
     if request.method == "POST":
+        msg = MIMEMultipart()
+        msg["Subject"] = "Fotos dos Itens Mapeados - Pr3cin"
+        msg["From"] = "costavalmir2011@gmail.com"
+        msg["To"] = "Pr3cin.econ@outlook.com"
+        msg.attach(MIMEText("Seguem em anexo as fotos dos itens mapeados.", "plain"))
+
+        for i in range(10):  # Esperando até 10 fotos
+            file = request.files.get(f"foto_{i}")
+            if file and file.filename:
+                part = MIMEBase("application", "octet-stream")
+                part.set_payload(file.read())
+                encoders.encode_base64(part)
+                part.add_header("Content-Disposition", f'attachment; filename="{file.filename}"')
+                msg.attach(part)
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+            servidor.login("costavalmir2011@gmail.com", "knnazlcxoxeuxklj")
+            servidor.send_message(msg)
+
         return redirect(url_for("agradecimento"))
 
     # Seleciona 30 itens únicos aleatórios do Excel
