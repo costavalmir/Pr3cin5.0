@@ -2,14 +2,14 @@
 <html lang="pt-br">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GMMDW2NV91"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GMMDW2NV91"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-  gtag('config', 'G-GMMDW2NV91');
-</script>
+        gtag('config', 'G-GMMDW2NV91');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anexar Fotos</title>
@@ -60,12 +60,12 @@
         <h1>Anexar Fotos dos Itens</h1>
         <form action="/upload_fotos" method="POST" enctype="multipart/form-data">
             <div class="itens-lista">
-                <label>Envie fotos dos preços de 10 itens mapeados:</label>
+                <label>Envie fotos dos preços de até 10 itens mapeados (opcional):</label>
 
                 {% for item in itens[:10] %}
                     <div class="item">
                         <label>{{ item }}</label>
-                        <input type="file" name="foto_{{ loop.index0 }}" accept="image/*" required>
+                        <input type="file" name="foto_{{ loop.index0 }}" accept="image/*">
                     </div>
                 {% endfor %}
             </div>
@@ -74,5 +74,3 @@
     </div>
 </body>
 </html>
-
-
