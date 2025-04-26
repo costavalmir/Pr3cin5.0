@@ -191,7 +191,7 @@ def mapeamento():
 
         return redirect(url_for("upload_fotos"))
 
-    itens_completos = df["Descrição do Item"].dropna().unique().tolist()
+    itens_completos = df["Descrição do Item"].dropna().tolist()
     return render_template("mapeamento.html", itens=itens_completos)
 
 @app.route("/agradecimento")
