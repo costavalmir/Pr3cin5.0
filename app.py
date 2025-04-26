@@ -33,9 +33,14 @@ def login():
     if request.method == "POST":
         usuario = request.form["usuario"]
         senha = request.form["senha"]
+        usuario_formatado = usuario.strip().lower()
+
+        if usuario_formatado in usuarios_logados:
+            return render_template("login.html", erro="Usuário já está logado em outro dispositivo.")
+
         if validar_login(usuario, senha):
-            session["usuario"] = usuario
-            usuarios_logados[usuario] = True
+            session["usuario"] = usuario_formatado
+            usuarios_logados[usuario_formatado] = True
             return redirect(url_for("index"))
         else:
             return render_template("login.html", erro="Usuário ou senha inválidos.")
@@ -146,7 +151,7 @@ def upload_fotos():
         msg["To"] = "Pr3cin.econ@outlook.com"
         msg.attach(MIMEText("Seguem em anexo as fotos dos itens mapeados.", "plain"))
 
-        for i in range(10):  # Esperando até 10 fotos
+        for i in range(10):
             file = request.files.get(f"foto_{i}")
             if file and file.filename:
                 part = MIMEBase("application", "octet-stream")
@@ -161,7 +166,6 @@ def upload_fotos():
 
         return redirect(url_for("agradecimento"))
 
-    # Seleciona 30 itens únicos aleatórios do Excel
     itens_unicos = df["Descrição do Item"].dropna().unique().tolist()
     itens_aleatorios = random.sample(itens_unicos, min(30, len(itens_unicos)))
 
