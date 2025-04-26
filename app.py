@@ -11,6 +11,9 @@ import random
 app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'
 
+# Dicionário para guardar usuários logados
+usuarios_logados = {}
+
 # Carregamento do Excel com produtos
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
@@ -32,6 +35,7 @@ def login():
         senha = request.form["senha"]
         if validar_login(usuario, senha):
             session["usuario"] = usuario
+            usuarios_logados[usuario] = True
             return redirect(url_for("index"))
         else:
             return render_template("login.html", erro="Usuário ou senha inválidos.")
@@ -39,7 +43,9 @@ def login():
 
 @app.route("/logout")
 def logout():
-    session.pop("usuario", None)
+    usuario = session.pop("usuario", None)
+    if usuario and usuario in usuarios_logados:
+        usuarios_logados.pop(usuario)
     return redirect(url_for("login"))
 
 @app.route("/", methods=["GET", "POST"])
