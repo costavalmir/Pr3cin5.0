@@ -65,8 +65,7 @@ def index():
         nome = row["Descrição do Item"]
         imagem = row.get("imagem", "")
         if nome not in produtos_vistos:
-            preco_minimo = df[df["Descrição do Item"] == nome]["Valor Unitário"].min()
-            produtos_exibicao.append({"nome": nome, "imagem": imagem, "preco": preco_minimo})
+            produtos_exibicao.append({"nome": nome, "imagem": imagem})
             produtos_vistos.add(nome)
 
     return render_template("index.html", produtos=produtos_exibicao)
