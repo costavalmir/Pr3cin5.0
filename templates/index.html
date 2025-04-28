@@ -13,90 +13,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pr3cin - Comparador de Preços</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .usuario-logado {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-weight: bold;
-            color: #1a73e8;
-        }
-        h1 {
-            text-align: center;
-            color: #1a73e8;
-        }
-        label, input, select {
-            display: block;
-            margin-bottom: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .item-selecionado {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .item-selecionado img {
-            width: 50px;
-            height: auto;
-            margin-right: 10px;
-        }
-        .btn-remover {
-            background: #e53935;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-        .btn-adicionar, .btn-enviar, .btn-sair {
-            background: #1a73e8;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .btn-sair {
-            background: #f44336;
-        }
-        #busca {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-sizing: border-box; position: relative; }
+        .usuario-logado { position: absolute; top: 10px; left: 20px; font-weight: bold; color: #1a73e8; }
+        h1 { text-align: center; color: #1a73e8; }
+        label, input, select { display: block; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        .item-selecionado { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #f0f0f0; padding: 10px; border-radius: 5px; }
+        .item-selecionado img { width: 50px; height: auto; margin-right: 10px; }
+        .btn-remover { background: #e53935; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; }
+        .btn-adicionar, .btn-enviar, .btn-sair { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; box-sizing: border-box; }
+        .btn-sair { background: #f44336; }
+        #busca { padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 20px; box-sizing: border-box; }
         @media (max-width: 600px) {
-            .item-selecionado {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .btn-remover {
-                align-self: flex-end;
-            }
+            .item-selecionado { flex-direction: column; align-items: flex-start; }
+            .btn-remover { align-self: flex-end; }
         }
     </style>
 </head>
@@ -113,7 +43,9 @@
             <label for="produto">Produto:</label>
             <select id="produto">
                 {% for p in produtos %}
-                    <option value="{{ p.nome }}" data-imagem="{{ p.imagem }}">{{ p.nome }}</option>
+                    <option value="{{ p.nome }}" data-imagem="{{ p.imagem }}">
+                        {{ p.nome }}{% if p.mais_barato %} ⭐{% endif %}
+                    </option>
                 {% endfor %}
             </select>
 
@@ -169,3 +101,4 @@
     </script>
 </body>
 </html>
+
