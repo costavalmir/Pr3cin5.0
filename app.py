@@ -85,17 +85,18 @@ def index():
             for p in produtos:
                 p["mais_barato"] = (p == mais_barato)
 
-    # Montar lista final de exibição
-    for grupo, produtos in produtos_por_grupo.items():
-        for p in produtos:
-            nome = p["nome"]
-            if nome not in produtos_vistos:
-                produtos_exibicao.append({
-                    "nome": nome,
-                    "imagem": p["imagem"],
-                    "mais_barato": p.get("mais_barato", False)
-                })
-                produtos_vistos.add(nome)
+  # Montar produtos para exibição (corrigido)
+for grupo, produtos in grupos.items():
+    for p in produtos:
+        nome = p["descricao"]
+        imagem = p.get("imagem", "")
+        if nome not in produtos_vistos:
+            produtos_exibicao.append({
+                "nome": nome,
+                "imagem": imagem,
+                "mais_barato": nome == mais_baratos.get(grupo)
+            })
+            produtos_vistos.add(nome)
 
     return render_template("index.html", produtos=produtos_exibicao)
 
