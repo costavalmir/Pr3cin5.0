@@ -78,22 +78,23 @@ def index():
         })
 
     # Identificar o mais barato de cada grupo
-    mais_baratos = set()
+    mais_baratos = {}
     for grupo, produtos in grupos.items():
         if produtos:
             mais_barato = min(produtos, key=lambda x: x["valor_unitario"])
-            mais_baratos.add(mais_barato["descricao"])
+            mais_baratos[grupo] = mais_barato["descricao"]
 
     # Montar produtos para exibição
     for _, row in df.iterrows():
         nome = row["Descrição do Item"]
         imagem = row.get("imagem", "")
+        grupo = row.get("grupo", "")
 
         if nome not in produtos_vistos:
             produtos_exibicao.append({
                 "nome": nome,
                 "imagem": imagem,
-                "mais_barato": nome in mais_baratos
+                "mais_barato": nome == mais_baratos.get(grupo)  # Comparar com o mais barato do grupo
             })
             produtos_vistos.add(nome)
 
@@ -255,4 +256,3 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
-
