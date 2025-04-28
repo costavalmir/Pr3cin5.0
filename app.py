@@ -11,6 +11,7 @@ import random
 app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'
 
+# Dicionário para guardar usuários logados
 usuarios_logados = {}
 
 # Carregamento do Excel com produtos
@@ -60,12 +61,41 @@ def index():
     produtos_exibicao = []
     produtos_vistos = set()
 
+    # Organizar produtos por grupo
+    grupos = {}
     for _, row in df.iterrows():
-        identificacao = row.get("identificação", "")
+        grupo = row.get("grupo", "")
+        descricao = row["Descrição do Item"]
+        valor_unitario = row["Valor Unitário"]
         imagem = row.get("imagem", "")
-        if identificacao and identificacao not in produtos_vistos:
-            produtos_exibicao.append({"nome": identificacao, "imagem": imagem})
-            produtos_vistos.add(identificacao)
+
+        if grupo not in grupos:
+            grupos[grupo] = []
+        grupos[grupo].append({
+            "descricao": descricao,
+            "valor_unitario": valor_unitario,
+            "imagem": imagem
+        })
+
+    # Identificar o mais barato de cada grupo
+    mais_baratos = set()
+    for grupo, produtos in grupos.items():
+        if produtos:
+            mais_barato = min(produtos, key=lambda x: x["valor_unitario"])
+            mais_baratos.add(mais_barato["descricao"])
+
+    # Montar produtos para exibição
+    for _, row in df.iterrows():
+        nome = row["Descrição do Item"]
+        imagem = row.get("imagem", "")
+
+        if nome not in produtos_vistos:
+            produtos_exibicao.append({
+                "nome": nome,
+                "imagem": imagem,
+                "mais_barato": nome in mais_baratos
+            })
+            produtos_vistos.add(nome)
 
     return render_template("index.html", produtos=produtos_exibicao)
 
@@ -86,7 +116,7 @@ def resultado():
 
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
-        dados_item = df[df["identificação"] == item]
+        dados_item = df[df["Descrição do Item"] == item]
 
         if not dados_item.empty:
             dados_item = dados_item.sort_values("Valor Unitário")
@@ -165,7 +195,7 @@ def upload_fotos():
 
         return redirect(url_for("agradecimento"))
 
-    itens_unicos = df["identificação"].dropna().unique().tolist()
+    itens_unicos = df["Descrição do Item"].dropna().unique().tolist()
     itens_aleatorios = random.sample(itens_unicos, min(30, len(itens_unicos)))
 
     return render_template("upload_fotos.html", itens=itens_aleatorios)
@@ -200,7 +230,7 @@ def mapeamento():
 
         return redirect(url_for("upload_fotos"))
 
-    itens_completos = df["identificação"].dropna().tolist()
+    itens_completos = df["Descrição do Item"].dropna().tolist()
     return render_template("mapeamento.html", itens=itens_completos)
 
 @app.route("/agradecimento")
@@ -225,3 +255,4 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
+
