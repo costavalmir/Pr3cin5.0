@@ -7,7 +7,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-GMMDW2NV91');
 </script>
     <meta charset="UTF-8">
@@ -90,7 +89,6 @@
             margin-bottom: 20px;
             box-sizing: border-box;
         }
-
         @media (max-width: 600px) {
             .item-selecionado {
                 flex-direction: column;
@@ -115,7 +113,7 @@
             <label for="produto">Produto:</label>
             <select id="produto">
                 {% for p in produtos %}
-                    <option value="{{ p.nome }}">{{ p.nome }}</option>
+                    <option value="{{ p.nome }}" data-imagem="{{ p.imagem }}">{{ p.nome }}</option>
                 {% endfor %}
             </select>
 
@@ -136,19 +134,13 @@
         const produtoSelect = document.getElementById("produto");
         const quantidadeInput = document.getElementById("quantidade");
 
-        const imagens = {
-            {% for p in produtos %}
-                "{{ p.nome }}": "{{ p.imagem }}",
-            {% endfor %}
-        };
-
         function adicionarProduto() {
-            const produto = produtoSelect.value;
+            const selectedOption = produtoSelect.options[produtoSelect.selectedIndex];
+            const produto = selectedOption.value;
+            const imagemUrl = selectedOption.getAttribute("data-imagem") || "";
             const quantidade = quantidadeInput.value;
 
             if (!produto || quantidade < 1) return;
-
-            const imagemUrl = imagens[produto] || "";
 
             const itemDiv = document.createElement("div");
             itemDiv.className = "item-selecionado";
