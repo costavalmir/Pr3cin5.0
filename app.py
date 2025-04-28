@@ -62,41 +62,40 @@ def index():
     produtos_vistos = set()
 
     # Organizar produtos por grupo
-    grupos = {}
+    produtos_por_grupo = {}
     for _, row in df.iterrows():
-        grupo = row.get("grupo", "")
+        grupo = row.get("grupo", "").strip()
         descricao = row["Descrição do Item"]
         valor_unitario = row["Valor Unitário"]
         imagem = row.get("imagem", "")
 
-        if grupo not in grupos:
-            grupos[grupo] = []
-        grupos[grupo].append({
-            "descricao": descricao,
+        if grupo not in produtos_por_grupo:
+            produtos_por_grupo[grupo] = []
+
+        produtos_por_grupo[grupo].append({
+            "nome": descricao,
             "valor_unitario": valor_unitario,
             "imagem": imagem
         })
 
-    # Identificar o mais barato de cada grupo
-    mais_baratos = {}
-    for grupo, produtos in grupos.items():
+    # Marcar o mais barato de cada grupo
+    for grupo, produtos in produtos_por_grupo.items():
         if produtos:
             mais_barato = min(produtos, key=lambda x: x["valor_unitario"])
-            mais_baratos[grupo] = mais_barato["descricao"]
+            for p in produtos:
+                p["mais_barato"] = (p == mais_barato)
 
-    # Montar produtos para exibição
-    for _, row in df.iterrows():
-        nome = row["Descrição do Item"]
-        imagem = row.get("imagem", "")
-        grupo = row.get("grupo", "")
-
-        if nome not in produtos_vistos:
-            produtos_exibicao.append({
-                "nome": nome,
-                "imagem": imagem,
-                "mais_barato": nome == mais_baratos.get(grupo)  # Comparar com o mais barato do grupo
-            })
-            produtos_vistos.add(nome)
+    # Montar lista final de exibição
+    for grupo, produtos in produtos_por_grupo.items():
+        for p in produtos:
+            nome = p["nome"]
+            if nome not in produtos_vistos:
+                produtos_exibicao.append({
+                    "nome": nome,
+                    "imagem": p["imagem"],
+                    "mais_barato": p.get("mais_barato", False)
+                })
+                produtos_vistos.add(nome)
 
     return render_template("index.html", produtos=produtos_exibicao)
 
@@ -255,4 +254,4 @@ def enviar_email(nome, email):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=False, host="0.0.0
+    app.run(debug=False, host="0.0.0.0", port=port)
