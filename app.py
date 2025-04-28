@@ -11,7 +11,6 @@ import random
 app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'
 
-# Dicionário para guardar usuários logados
 usuarios_logados = {}
 
 # Carregamento do Excel com produtos
@@ -62,11 +61,11 @@ def index():
     produtos_vistos = set()
 
     for _, row in df.iterrows():
-        nome = row["Descrição do Item"]
+        identificacao = row.get("identificação", "")
         imagem = row.get("imagem", "")
-        if nome not in produtos_vistos:
-            produtos_exibicao.append({"nome": nome, "imagem": imagem})
-            produtos_vistos.add(nome)
+        if identificacao and identificacao not in produtos_vistos:
+            produtos_exibicao.append({"nome": identificacao, "imagem": imagem})
+            produtos_vistos.add(identificacao)
 
     return render_template("index.html", produtos=produtos_exibicao)
 
@@ -87,7 +86,7 @@ def resultado():
 
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
-        dados_item = df[df["Descrição do Item"] == item]
+        dados_item = df[df["identificação"] == item]
 
         if not dados_item.empty:
             dados_item = dados_item.sort_values("Valor Unitário")
@@ -166,7 +165,7 @@ def upload_fotos():
 
         return redirect(url_for("agradecimento"))
 
-    itens_unicos = df["Descrição do Item"].dropna().unique().tolist()
+    itens_unicos = df["identificação"].dropna().unique().tolist()
     itens_aleatorios = random.sample(itens_unicos, min(30, len(itens_unicos)))
 
     return render_template("upload_fotos.html", itens=itens_aleatorios)
@@ -201,7 +200,7 @@ def mapeamento():
 
         return redirect(url_for("upload_fotos"))
 
-    itens_completos = df["Descrição do Item"].dropna().tolist()
+    itens_completos = df["identificação"].dropna().tolist()
     return render_template("mapeamento.html", itens=itens_completos)
 
 @app.route("/agradecimento")
