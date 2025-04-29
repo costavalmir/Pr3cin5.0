@@ -11,8 +11,10 @@ import random
 app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'
 
+# Dicionário para guardar usuários logados
 usuarios_logados = {}
 
+# Carregamento do Excel com produtos
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
@@ -59,43 +61,14 @@ def index():
     produtos_exibicao = []
     produtos_vistos = set()
 
-    produtos_por_grupo = {}
     for _, row in df.iterrows():
-        grupo = row.get("grupo", "").strip()
-        descricao = row["Descrição do Item"]
-        valor_unitario = row["Valor Unitário"]
+        nome = row["Descrição do Item"]
         imagem = row.get("imagem", "")
+        if nome not in produtos_vistos:
+            produtos_exibicao.append({"nome": nome, "imagem": imagem})
+            produtos_vistos.add(nome)
 
-        if grupo not in produtos_por_grupo:
-            produtos_por_grupo[grupo] = []
-
-        produtos_por_grupo[grupo].append({
-            "nome": descricao,
-            "valor_unitario": valor_unitario,
-            "imagem": imagem
-        })
-
-    for grupo, produtos in produtos_por_grupo.items():
-        if produtos:
-            mais_barato = min(produtos, key=lambda x: x["valor_unitario"])
-            for p in produtos:
-                p["mais_barato"] = (p == mais_barato)
-
-    for grupo, produtos in produtos_por_grupo.items():
-        for p in produtos:
-            nome = p["nome"]
-            imagem = p.get("imagem", "")
-            if nome not in produtos_vistos:
-                produtos_exibicao.append({
-                    "nome": nome,
-                    "imagem": imagem,
-                    "mais_barato": p.get("mais_barato", False)
-                })
-                produtos_vistos.add(nome)
-
-    supermercados_unicos = df["Local"].dropna().unique().tolist()
-
-    return render_template("index.html", produtos=produtos_exibicao, supermercados=supermercados_unicos)
+    return render_template("index.html", produtos=produtos_exibicao)
 
 @app.route("/resultado", methods=["POST"])
 def resultado():
@@ -253,4 +226,3 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
-
