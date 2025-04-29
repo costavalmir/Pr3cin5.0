@@ -11,10 +11,8 @@ import random
 app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'
 
-# Dicionário para guardar usuários logados
 usuarios_logados = {}
 
-# Carregamento do Excel com produtos
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
@@ -61,7 +59,6 @@ def index():
     produtos_exibicao = []
     produtos_vistos = set()
 
-    # Organizar produtos por grupo
     produtos_por_grupo = {}
     for _, row in df.iterrows():
         grupo = row.get("grupo", "").strip()
@@ -78,27 +75,27 @@ def index():
             "imagem": imagem
         })
 
-    # Marcar o mais barato de cada grupo
     for grupo, produtos in produtos_por_grupo.items():
         if produtos:
             mais_barato = min(produtos, key=lambda x: x["valor_unitario"])
             for p in produtos:
                 p["mais_barato"] = (p == mais_barato)
 
-  # Montar produtos para exibição (corrigido)
-for grupo, produtos in grupos.items():
-    for p in produtos:
-        nome = p["descricao"]
-        imagem = p.get("imagem", "")
-        if nome not in produtos_vistos:
-            produtos_exibicao.append({
-                "nome": nome,
-                "imagem": imagem,
-                "mais_barato": nome == mais_baratos.get(grupo)
-            })
-            produtos_vistos.add(nome)
+    for grupo, produtos in produtos_por_grupo.items():
+        for p in produtos:
+            nome = p["nome"]
+            imagem = p.get("imagem", "")
+            if nome not in produtos_vistos:
+                produtos_exibicao.append({
+                    "nome": nome,
+                    "imagem": imagem,
+                    "mais_barato": p.get("mais_barato", False)
+                })
+                produtos_vistos.add(nome)
 
-    return render_template("index.html", produtos=produtos_exibicao)
+    supermercados_unicos = df["Local"].dropna().unique().tolist()
+
+    return render_template("index.html", produtos=produtos_exibicao, supermercados=supermercados_unicos)
 
 @app.route("/resultado", methods=["POST"])
 def resultado():
@@ -256,3 +253,4 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
+
