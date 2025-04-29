@@ -19,11 +19,6 @@ df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
 
-# Lista de mercados
-mercados_unicos = ["Casa Do Sabão - Av Presidente Tancredo Neves, 1861, Eng Pedreira, Japeri, Rj",
-                   "Supermarket - R. Oliver Ramos de Oliveira, 300 - Eng. Pedreira, Japeri - RJ, 26445-050",
-                   "Laticínio do Zuzu - Praça Olávo Bilac, 110 - Eng. Pedreira, Japeri - RJ, 26445-010"]
-
 def validar_login(usuario, senha):
     usuarios_df = pd.read_excel("usuarios.xlsx")
     usuario = usuario.strip().lower()
@@ -89,7 +84,6 @@ def resultado():
     resultado_por_mercado = {}
     economia_total = 0
     gasto_total = 0
-    gasto_por_mercado_unico = {mercado: 0 for mercado in mercados_unicos}  # Inicializa o dicionário com os mercados
 
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
@@ -125,15 +119,11 @@ def resultado():
 
             resultado_por_mercado[local].append(item_resultado)
 
-            # Adiciona o valor total para cada mercado, para calcular o total caso tudo fosse comprado lá
-            gasto_por_mercado_unico[local] += valor_total_barato
-
     return render_template(
         "resultado.html",
         resultado_por_mercado=resultado_por_mercado,
         economia_total=round(economia_total, 2),
-        gasto_total=round(gasto_total, 2),
-        gasto_por_mercado_unico=gasto_por_mercado_unico  # Passa os totais para o template
+        gasto_total=round(gasto_total, 2)
     )
 
 @app.route("/cadastro", methods=["GET", "POST"])
@@ -236,4 +226,3 @@ def enviar_email(nome, email):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host="0.0.0.0", port=port)
-
