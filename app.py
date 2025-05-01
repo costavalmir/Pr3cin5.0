@@ -11,10 +11,8 @@ import random
 app = Flask(__name__)
 app.secret_key = 'chave_super_secreta'
 
-# Dicionário para guardar usuários logados
 usuarios_logados = {}
 
-# Carregamento do Excel com produtos
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
@@ -58,17 +56,25 @@ def index():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
+    mercado_selecionado = request.form.get("mercado")
+    if mercado_selecionado:
+        df_filtrado = df[df["Local"] == mercado_selecionado]
+    else:
+        df_filtrado = df
+
     produtos_exibicao = []
     produtos_vistos = set()
 
-    for _, row in df.iterrows():
+    for _, row in df_filtrado.iterrows():
         nome = row["Descrição do Item"]
         imagem = row.get("imagem", "")
         if nome not in produtos_vistos:
             produtos_exibicao.append({"nome": nome, "imagem": imagem})
             produtos_vistos.add(nome)
 
-    return render_template("index.html", produtos=produtos_exibicao)
+    mercados_disponiveis = sorted(df["Local"].dropna().unique())
+
+    return render_template("index.html", produtos=produtos_exibicao, mercados=mercados_disponiveis)
 
 @app.route("/resultado", methods=["POST"])
 def resultado():
