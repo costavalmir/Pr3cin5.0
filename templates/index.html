@@ -128,7 +128,7 @@
 
             <label for="produto">Produto:</label>
             <select id="produto">
-                <!-- As opções de produto serão filtradas dinamicamente -->
+                <!-- As opções de produto serão preenchidas dinamicamente -->
             </select>
 
             <label for="quantidade">Quantidade:</label>
@@ -187,12 +187,19 @@
 
             // Limpa o select e adiciona as opções filtradas
             produtoSelect.innerHTML = '';
-            produtosFiltrados.forEach(produto => {
+            if (produtosFiltrados.size > 0) {
+                produtosFiltrados.forEach(produto => {
+                    const option = document.createElement("option");
+                    option.value = produto;
+                    option.textContent = produto;
+                    produtoSelect.appendChild(option);
+                });
+            } else {
                 const option = document.createElement("option");
-                option.value = produto;
-                option.textContent = produto;
+                option.value = "";
+                option.textContent = "Nenhum produto disponível";
                 produtoSelect.appendChild(option);
-            });
+            }
         }
 
         // Evento de mudança nos checkboxes para filtrar produtos
@@ -231,6 +238,9 @@
                 option.style.display = option.value.toLowerCase().includes(termo) ? "" : "none";
             }
         });
+
+        // Inicializa o filtro de produtos
+        filtrarProdutos();
     </script>
 </body>
 </html>
