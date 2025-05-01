@@ -118,9 +118,9 @@
         <form id="form-produtos" action="/resultado" method="post">
             <div class="checkbox-group">
                 <label><strong>Escolha os supermercados:</strong></label>
-                <label><input type="checkbox" name="mercados" value="Casa Do Sabão"> Casa Do Sabão</label>
+                <label><input type="checkbox" name="mercados" value="Casa Do Sabão" data-gtm-form-interact-field-id="0"> Casa Do Sabão</label>
                 <label><input type="checkbox" name="mercados" value="Supermarket"> Supermarket</label>
-                <label><input type="checkbox" name="mercados" value="Laticínio do Zuzu"> Laticínio do Zuzu</label>
+                <label><input type="checkbox" name="mercados" value="Laticínio do Zuzu" data-gtm-form-interact-field-id="1"> Laticínio do Zuzu</label>
             </div>
 
             <label for="busca">Buscar produto:</label>
@@ -128,9 +128,7 @@
 
             <label for="produto">Produto:</label>
             <select id="produto">
-                {% for p in produtos %}
-                    <option value="{{ p.nome }}">{{ p.nome }}</option>
-                {% endfor %}
+                <!-- As opções de produto serão filtradas dinamicamente -->
             </select>
 
             <label for="quantidade">Quantidade:</label>
@@ -156,6 +154,52 @@
             {% endfor %}
         };
 
+        const produtosPorMercado = {
+            "Casa Do Sabão": [
+                {% for p in produtos if p.mercado == 'Casa Do Sabão' %}
+                    "{{ p.nome }}",
+                {% endfor %}
+            ],
+            "Supermarket": [
+                {% for p in produtos if p.mercado == 'Supermarket' %}
+                    "{{ p.nome }}",
+                {% endfor %}
+            ],
+            "Laticínio do Zuzu": [
+                {% for p in produtos if p.mercado == 'Laticínio do Zuzu' %}
+                    "{{ p.nome }}",
+                {% endfor %}
+            ]
+        };
+
+        function filtrarProdutos() {
+            const mercadosSelecionados = Array.from(document.querySelectorAll('input[name="mercados"]:checked')).map(el => el.value);
+            const produtosFiltrados = new Set();
+
+            // Adiciona os produtos dos supermercados selecionados
+            mercadosSelecionados.forEach(mercado => {
+                if (produtosPorMercado[mercado]) {
+                    produtosPorMercado[mercado].forEach(produto => {
+                        produtosFiltrados.add(produto);
+                    });
+                }
+            });
+
+            // Limpa o select e adiciona as opções filtradas
+            produtoSelect.innerHTML = '';
+            produtosFiltrados.forEach(produto => {
+                const option = document.createElement("option");
+                option.value = produto;
+                option.textContent = produto;
+                produtoSelect.appendChild(option);
+            });
+        }
+
+        // Evento de mudança nos checkboxes para filtrar produtos
+        document.querySelectorAll('input[name="mercados"]').forEach(checkbox => {
+            checkbox.addEventListener('change', filtrarProdutos);
+        });
+
         function adicionarProduto() {
             const produto = produtoSelect.value;
             const quantidade = quantidadeInput.value;
@@ -166,15 +210,14 @@
 
             const itemDiv = document.createElement("div");
             itemDiv.className = "item-selecionado";
-            itemDiv.innerHTML = `
-                <div style="display: flex; align-items: center;">
+            itemDiv.innerHTML = 
+                `<div style="display: flex; align-items: center;">
                     <img src="${imagemUrl}" alt="${produto}">
                     <span>${produto} - ${quantidade} un.</span>
                 </div>
                 <button type="button" class="btn-remover" onclick="removerProduto(this)">Remover</button>
                 <input type="hidden" name="produto" value="${produto}">
-                <input type="hidden" name="quantidade" value="${quantidade}">
-            `;
+                <input type="hidden" name="quantidade" value="${quantidade}">`;
             listaItens.appendChild(itemDiv);
         }
 
