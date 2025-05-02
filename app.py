@@ -56,11 +56,11 @@ def index():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
-    mercado_selecionado = request.form.get("mercado")
-    if mercado_selecionado:
-        df_filtrado = df[df["Local"] == mercado_selecionado]
-    else:
-        df_filtrado = df
+mercados_selecionados = request.form.getlist("mercado")
+if mercados_selecionados:
+    df_filtrado = df[df["Local"].isin(mercados_selecionados)]
+else:
+    df_filtrado = df
 
     produtos_exibicao = []
     produtos_vistos = set()
