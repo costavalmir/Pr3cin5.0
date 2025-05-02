@@ -104,7 +104,7 @@ def resultado():
 
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
-        dados_item = df[df["Descrição do Item"] == item]
+        dados_item = df[(df["Descrição do Item"] == item) & (df["Local"].isin(mercados_selecionados))]
 
         if not dados_item.empty:
             dados_item = dados_item.sort_values("Valor Unitário")
