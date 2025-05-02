@@ -64,34 +64,44 @@ def index():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
-    mercados_selecionados = request.form.getlist("mercado")
-    if mercados_selecionados:
-        df_filtrado = df[df["Local"].isin(mercados_selecionados)]
-    else:
-        df_filtrado = df
+    if request.method == "POST":
+        # Armazenando mercados selecionados na sessão
+        mercados_selecionados = request.form.getlist("mercado")
+        session["mercados"] = mercados_selecionados  # Guardando na sessão
+        
+        # Filtrando o dataframe de acordo com os mercados selecionados
+        if mercados_selecionados:
+            df_filtrado = df[df["Local"].isin(mercados_selecionados)]
+        else:
+            df_filtrado = df
 
-    produtos_exibicao = []
-    produtos_vistos = set()
+        produtos_exibicao = []
+        produtos_vistos = set()
 
-    for _, row in df_filtrado.iterrows():
-        nome = row["Descrição do Item"]
-        imagem = row.get("imagem", "")
-        if nome not in produtos_vistos:
-            produtos_exibicao.append({"nome": nome, "imagem": imagem})
-            produtos_vistos.add(nome)
+        for _, row in df_filtrado.iterrows():
+            nome = row["Descrição do Item"]
+            imagem = row.get("imagem", "")
+            if nome not in produtos_vistos:
+                produtos_exibicao.append({"nome": nome, "imagem": imagem})
+                produtos_vistos.add(nome)
 
+        mercados_disponiveis = sorted(df["Local"].dropna().unique())
+
+        return render_template("index.html", produtos=produtos_exibicao, mercados=mercados_disponiveis)
+
+    # Se não foi um POST, apenas exibe a lista de mercados
     mercados_disponiveis = sorted(df["Local"].dropna().unique())
-
-    return render_template("index.html", produtos=produtos_exibicao, mercados=mercados_disponiveis)
-
+    return render_template("selecionar_mercado.html", mercados=mercados_disponiveis)
+    
 @app.route("/resultado", methods=["POST"])
 def resultado():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
-    # Obter mercados selecionados via checkbox
-    mercados_selecionados = request.form.getlist("mercado")
+    # Recuperando os mercados da sessão
+    mercados_selecionados = session.get("mercados", [])
 
+    # Obter itens e quantidades selecionados pelo usuário
     itens_selecionados = request.form.getlist("produto")
     quantidades = request.form.getlist("quantidade")
 
@@ -102,6 +112,7 @@ def resultado():
     economia_total = 0
     gasto_total = 0
 
+    # Loop para processar os produtos selecionados
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
         dados_item = df[(df["Descrição do Item"] == item) & (df["Local"].isin(mercados_selecionados))]
@@ -131,7 +142,6 @@ def resultado():
                 "data_oferta": local_mais_barato.get("data da oferta", "")
             }
 
-            # Verificar se o mercado (local) está na lista dos mercados selecionados
             if local in mercados_selecionados:
                 if local not in resultado_por_mercado:
                     resultado_por_mercado[local] = []
@@ -144,6 +154,7 @@ def resultado():
         economia_total=round(economia_total, 2),
         gasto_total=round(gasto_total, 2)
     )
+
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
     if request.method == "POST":
