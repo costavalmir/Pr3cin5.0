@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecionar Mercados - Pr3cin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .usuario-logado {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+        }
+        form {
+            margin-top: 30px;
+        }
+        .mercado-checkbox {
+            margin-bottom: 10px;
+        }
+        .btn-continuar {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if session['usuario'] %}
+            <div class="usuario-logado">Olá, {{ session['usuario'] }} 👋</div>
+        {% endif %}
+        <h1>Escolha os Mercados</h1>
+        <form method="post" action="/">
+            {% for mercado in mercados %}
+                <div class="mercado-checkbox">
+                    <label>
+                        <input type="checkbox" name="mercado" value="{{ mercado }}"> {{ mercado }}
+                    </label>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-continuar">Continuar</button>
+        </form>
+    </div>
+</body>
+</html>
