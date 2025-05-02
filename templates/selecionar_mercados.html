@@ -47,6 +47,17 @@
             box-sizing: border-box;
             margin-top: 20px;
         }
+        .btn-sair {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -64,6 +75,11 @@
                 </div>
             {% endfor %}
             <button type="submit" class="btn-continuar">Continuar</button>
+        </form>
+
+        <!-- Botão de Sair -->
+        <form action="/sair" method="POST">
+            <button type="submit" class="btn-sair">Sair</button>
         </form>
     </div>
 </body>
