@@ -89,6 +89,9 @@ def resultado():
     if "usuario" not in session:
         return redirect(url_for("login"))
 
+    # Obter mercados selecionados via checkbox
+    mercados_selecionados = request.form.getlist("mercado")
+
     itens_selecionados = request.form.getlist("produto")
     quantidades = request.form.getlist("quantidade")
 
@@ -128,10 +131,12 @@ def resultado():
                 "data_oferta": local_mais_barato.get("data da oferta", "")
             }
 
-            if local not in resultado_por_mercado:
-                resultado_por_mercado[local] = []
+            # Verificar se o mercado (local) está na lista dos mercados selecionados
+            if local in mercados_selecionados:
+                if local not in resultado_por_mercado:
+                    resultado_por_mercado[local] = []
 
-            resultado_por_mercado[local].append(item_resultado)
+                resultado_por_mercado[local].append(item_resultado)
 
     return render_template(
         "resultado.html",
@@ -139,7 +144,6 @@ def resultado():
         economia_total=round(economia_total, 2),
         gasto_total=round(gasto_total, 2)
     )
-
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
     if request.method == "POST":
