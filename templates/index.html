@@ -89,7 +89,17 @@
             margin-bottom: 20px;
             box-sizing: border-box;
         }
-
+        .btn-voltar {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
         @media (max-width: 600px) {
             .item-selecionado {
                 flex-direction: column;
@@ -107,6 +117,9 @@
             <div class="usuario-logado">Olá, {{ session['usuario'] }} 👋</div>
         {% endif %}
         <h1>Pr3cin</h1>
+
+        <!-- Botão Voltar -->
+        <button onclick="window.location.href='/selecionar_mercados.html'" class="btn-voltar">← Voltar à seleção de mercados</button>
 
         <form id="form-produtos" action="/resultado" method="post">
             <label for="busca">Buscar produto:</label>
