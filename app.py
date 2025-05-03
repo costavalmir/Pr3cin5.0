@@ -16,6 +16,7 @@ usuarios_logados = {}
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
+df["grupo"] = df["grupo"].astype(str)
 
 def validar_login(usuario, senha):
     usuarios_df = pd.read_excel("usuarios.xlsx")
@@ -112,6 +113,19 @@ def resultado():
     economia_total = 0
     gasto_total = 0
 
+# Filtrar o dataframe com os mercados selecionados
+df_filtrado = df[df["Local"].isin(mercados_selecionados)]
+
+# Encontrar o item mais barato por grupo
+grupo_para_item_mais_barato = {}
+
+grupos_unicos = df_filtrado["grupo"].dropna().unique()
+for grupo in grupos_unicos:
+    df_grupo = df_filtrado[df_filtrado["grupo"] == grupo]
+    if not df_grupo.empty:
+        item_mais_barato = df_grupo.sort_values("Valor Unitário").iloc[0]
+        grupo_para_item_mais_barato[grupo] = item_mais_barato["Descrição do Item"]
+    
     # Loop para processar os produtos selecionados
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
@@ -140,6 +154,21 @@ def resultado():
                 "valor_unitario": round(valor_unitario_barato, 2),
                 "valor_total": round(valor_total_barato, 2),
                 "data_oferta": local_mais_barato.get("data da oferta", "")
+
+                # Determinar se é o mais barato do grupo
+grupo = local_mais_barato.get("grupo", "")
+eh_mais_barato_do_grupo = item == grupo_para_item_mais_barato.get(grupo, "")
+
+item_resultado = {
+    "item": item,
+    "quantidade": qtde,
+    "local": local,
+    "valor_unitario": round(valor_unitario_barato, 2),
+    "valor_total": round(valor_total_barato, 2),
+    "data_oferta": local_mais_barato.get("data da oferta", ""),
+    "mais_barato_grupo": eh_mais_barato_do_grupo
+}
+                
             }
 
             if local in mercados_selecionados:
