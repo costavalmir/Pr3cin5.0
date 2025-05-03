@@ -16,7 +16,7 @@ usuarios_logados = {}
 df = pd.read_excel("compras_05-04-2025.xlsx")
 df["Descrição do Item"] = df["Descrição do Item"].astype(str)
 df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce")
-df["grupo"] = df["grupo"].astype(str)
+df["Grupo"] = df["Grupo"].astype(str)
 
 def validar_login(usuario, senha):
     usuarios_df = pd.read_excel("usuarios.xlsx")
@@ -116,15 +116,15 @@ def resultado():
     # Filtrar o dataframe com os mercados selecionados
     df_filtrado = df[df["Local"].isin(mercados_selecionados)]
 
-    # Encontrar o item mais barato por grupo
-    grupo_para_item_mais_barato = {}
+    # Encontrar o item mais barato por Grupo
+    Grupo_para_item_mais_barato = {}
 
-    grupos_unicos = df_filtrado["grupo"].dropna().unique()
-    for grupo in grupos_unicos:
-        df_grupo = df_filtrado[df_filtrado["grupo"] == grupo]
-        if not df_grupo.empty:
-            item_mais_barato = df_grupo.sort_values("Valor Unitário").iloc[0]
-            grupo_para_item_mais_barato[grupo] = item_mais_barato["Descrição do Item"]
+    grupos_unicos = df_filtrado["Grupo"].dropna().unique()
+    for Grupo in grupos_unicos:
+        df_Grupo = df_filtrado[df_filtrado["Grupo"] == Grupo]
+        if not df_Grupo.empty:
+            item_mais_barato = df_Grupo.sort_values("Valor Unitário").iloc[0]
+            Grupo_para_item_mais_barato[Grupo] = item_mais_barato["Descrição do Item"]
     
     # Loop para processar os produtos selecionados
     for item, qtde in zip(itens_selecionados, quantidades):
@@ -147,8 +147,8 @@ def resultado():
             gasto_total += valor_total_barato
 
             local = local_mais_barato["Local"]
-            grupo = local_mais_barato.get("grupo", "")
-            eh_mais_barato_do_grupo = item == grupo_para_item_mais_barato.get(grupo, "")
+            Grupo = local_mais_barato.get("Grupo", "")
+            eh_mais_barato_do_Grupo = item == Grupo_para_item_mais_barato.get(Grupo, "")
 
             item_resultado = {
                 "item": item,
@@ -157,7 +157,7 @@ def resultado():
                 "valor_unitario": round(valor_unitario_barato, 2),
                 "valor_total": round(valor_total_barato, 2),
                 "data_oferta": local_mais_barato.get("data da oferta", ""),
-                "mais_barato_grupo": eh_mais_barato_do_grupo
+                "mais_barato_Grupo": eh_mais_barato_do_Grupo
             }
 
             if local in mercados_selecionados:
