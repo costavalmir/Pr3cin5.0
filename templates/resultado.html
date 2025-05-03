@@ -131,23 +131,6 @@
             </li>
         {% endfor %}
 
-{% for local, itens in resultado_por_mercado.items() %}
-  <h2>{{ local }}</h2>
-  <ul>
-    {% for item in itens %}
-      <li>
-        {{ item.item }} - R$ {{ item.valor_unitario }} (x{{ item.quantidade }}) = R$ {{ item.valor_total }}
-        {% if item.mais_barato_grupo %}
-          <span style="color: orange; font-weight: bold;">🏷️ Mais barato do grupo</span>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-{% endfor %}
-        
-    </ul>
-{% endfor %}
-
         <div class="resumo">
             Total gasto: R$ {{ gasto_total }}<br>
             Economia total: R$ {{ economia_total }}
