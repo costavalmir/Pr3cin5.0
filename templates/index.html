@@ -13,6 +13,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pr3cin - Comparador de Preços</title>
     <style>
+
+<!-- Popup -->
+<div id="popup" style="display: none;">
+    <div class="popup-overlay"></div>
+    <div class="popup-content">
+        <img src="https://raw.githubusercontent.com/costavalmir/Pr3cin5.0/refs/heads/main/Parceiros/1.png" alt="Imagem de boas-vindas" />
+        <button onclick="fecharPopup()">Fechar</button>
+    </div>
+</div>
+
+        <script>
+    window.onload = function () {
+        document.getElementById("popup").style.display = "block";
+    };
+
+    function fecharPopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+</script>
+        
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
