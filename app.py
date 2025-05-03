@@ -113,18 +113,18 @@ def resultado():
     economia_total = 0
     gasto_total = 0
 
-# Filtrar o dataframe com os mercados selecionados
-df_filtrado = df[df["Local"].isin(mercados_selecionados)]
+    # Filtrar o dataframe com os mercados selecionados
+    df_filtrado = df[df["Local"].isin(mercados_selecionados)]
 
-# Encontrar o item mais barato por grupo
-grupo_para_item_mais_barato = {}
+    # Encontrar o item mais barato por grupo
+    grupo_para_item_mais_barato = {}
 
-grupos_unicos = df_filtrado["grupo"].dropna().unique()
-for grupo in grupos_unicos:
-    df_grupo = df_filtrado[df_filtrado["grupo"] == grupo]
-    if not df_grupo.empty:
-        item_mais_barato = df_grupo.sort_values("Valor Unitário").iloc[0]
-        grupo_para_item_mais_barato[grupo] = item_mais_barato["Descrição do Item"]
+    grupos_unicos = df_filtrado["grupo"].dropna().unique()
+    for grupo in grupos_unicos:
+        df_grupo = df_filtrado[df_filtrado["grupo"] == grupo]
+        if not df_grupo.empty:
+            item_mais_barato = df_grupo.sort_values("Valor Unitário").iloc[0]
+            grupo_para_item_mais_barato[grupo] = item_mais_barato["Descrição do Item"]
     
     # Loop para processar os produtos selecionados
     for item, qtde in zip(itens_selecionados, quantidades):
@@ -147,28 +147,17 @@ for grupo in grupos_unicos:
             gasto_total += valor_total_barato
 
             local = local_mais_barato["Local"]
+            grupo = local_mais_barato.get("grupo", "")
+            eh_mais_barato_do_grupo = item == grupo_para_item_mais_barato.get(grupo, "")
+
             item_resultado = {
                 "item": item,
                 "quantidade": qtde,
                 "local": local,
                 "valor_unitario": round(valor_unitario_barato, 2),
                 "valor_total": round(valor_total_barato, 2),
-                "data_oferta": local_mais_barato.get("data da oferta", "")
-
-                # Determinar se é o mais barato do grupo
-grupo = local_mais_barato.get("grupo", "")
-eh_mais_barato_do_grupo = item == grupo_para_item_mais_barato.get(grupo, "")
-
-item_resultado = {
-    "item": item,
-    "quantidade": qtde,
-    "local": local,
-    "valor_unitario": round(valor_unitario_barato, 2),
-    "valor_total": round(valor_total_barato, 2),
-    "data_oferta": local_mais_barato.get("data da oferta", ""),
-    "mais_barato_grupo": eh_mais_barato_do_grupo
-}
-                
+                "data_oferta": local_mais_barato.get("data da oferta", ""),
+                "mais_barato_grupo": eh_mais_barato_do_grupo
             }
 
             if local in mercados_selecionados:
@@ -257,30 +246,13 @@ def mapeamento():
             servidor.login("costavalmir2011@gmail.com", "knnazlcxoxeuxklj")
             servidor.send_message(msg)
 
-        return redirect(url_for("upload_fotos"))
+        return redirect(url_for("agradecimento"))
 
-    itens_completos = df["Descrição do Item"].dropna().tolist()
-    return render_template("mapeamento.html", itens=itens_completos)
+    return render_template("mapeamento.html")
 
 @app.route("/agradecimento")
 def agradecimento():
     return render_template("agradecimento.html")
 
-def enviar_email(nome, email):
-    remetente = "costavalmir2011@gmail.com"
-    senha = "knnazlcxoxeuxklj"
-    destinatario = "Pr3cin.econ@outlook.com"
-
-    corpo = f"Novo cadastro:\n\nNome: {nome}\nEmail: {email}"
-    msg = MIMEText(corpo)
-    msg["Subject"] = "Novo Cadastro no Pr3cin"
-    msg["From"] = remetente
-    msg["To"] = destinatario
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-        servidor.login(remetente, senha)
-        servidor.send_message(msg)
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=False, host="0.0.0.0", port=port)
+    app.run(debug=True)
