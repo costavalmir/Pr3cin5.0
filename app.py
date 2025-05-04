@@ -29,8 +29,8 @@ def validar_login(usuario, senha):
 
 @app.route("/selecionar_mercados", methods=["GET"])
 def selecionar_mercados():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
+    # if "usuario" not in session:
+    #     return redirect(url_for("login"))
     
     mercados_disponiveis = sorted(df["Local"].dropna().unique())
     return render_template("selecionar_mercados.html", mercados=mercados_disponiveis)
@@ -62,15 +62,13 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
+    # if "usuario" not in session:
+    #     return redirect(url_for("login"))
 
     if request.method == "POST":
-        # Armazenando mercados selecionados na sessão
         mercados_selecionados = request.form.getlist("mercado")
-        session["mercados"] = mercados_selecionados  # Guardando na sessão
+        session["mercados"] = mercados_selecionados
         
-        # Filtrando o dataframe de acordo com os mercados selecionados
         if mercados_selecionados:
             df_filtrado = df[df["Local"].isin(mercados_selecionados)]
         else:
@@ -90,19 +88,16 @@ def index():
 
         return render_template("index.html", produtos=produtos_exibicao, mercados=mercados_disponiveis)
 
-    # Se não foi um POST, apenas exibe a lista de mercados
     mercados_disponiveis = sorted(df["Local"].dropna().unique())
     return render_template("selecionar_mercado.html", mercados=mercados_disponiveis)
     
 @app.route("/resultado", methods=["POST"])
 def resultado():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
+    # if "usuario" not in session:
+    #     return redirect(url_for("login"))
 
-    # Recuperando os mercados da sessão
     mercados_selecionados = session.get("mercados", [])
 
-    # Obter itens e quantidades selecionados pelo usuário
     itens_selecionados = request.form.getlist("produto")
     quantidades = request.form.getlist("quantidade")
 
@@ -113,10 +108,8 @@ def resultado():
     economia_total = 0
     gasto_total = 0
 
-    # Filtrar o dataframe com os mercados selecionados
     df_filtrado = df[df["Local"].isin(mercados_selecionados)]
 
-    # Encontrar o item mais barato por Grupo
     Grupo_para_item_mais_barato = {}
 
     grupos_unicos = df_filtrado["Grupo"].dropna().unique()
@@ -126,7 +119,6 @@ def resultado():
             item_mais_barato = df_Grupo.sort_values("Valor Unitário").iloc[0]
             Grupo_para_item_mais_barato[Grupo] = item_mais_barato["Descrição do Item"]
     
-    # Loop para processar os produtos selecionados
     for item, qtde in zip(itens_selecionados, quantidades):
         qtde = int(qtde) if qtde.isdigit() else 1
         dados_item = df[(df["Descrição do Item"] == item) & (df["Local"].isin(mercados_selecionados))]
@@ -188,8 +180,8 @@ def sucesso():
 
 @app.route("/upload_fotos", methods=["GET", "POST"])
 def upload_fotos():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
+    # if "usuario" not in session:
+    #     return redirect(url_for("login"))
 
     if request.method == "POST":
         msg = MIMEMultipart()
@@ -220,8 +212,8 @@ def upload_fotos():
 
 @app.route("/mapeamento", methods=["GET", "POST"])
 def mapeamento():
-    if "usuario" not in session:
-        return redirect(url_for("login"))
+    # if "usuario" not in session:
+    #     return redirect(url_for("login"))
 
     if request.method == "POST":
         total_itens = int(request.form.get("total_itens", 0))
