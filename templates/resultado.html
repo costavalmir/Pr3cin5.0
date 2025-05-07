@@ -107,17 +107,18 @@
         <h1>Melhores Preços</h1>
 
         {% for mercado, itens in resultado_por_mercado.items() %}
-            <h2>{{ mercado }}</h2>
-            <ul>
-                {% for item in itens %}
-                    <li>
-                        {{ item["item"] }} ({{ item["quantidade"] }} un.): 
-                        R$ {{ item["valor_total"] }} (R$ {{ item["valor_unitario"] }} un.)<br>
-                        <small>⏰ Oferta reportada em: {{ item["data_oferta"] }}</small>
-                    </li>
-                {% endfor %}
-            </ul>
+    <h2 style="margin-top: 1em;">🛒 {{ mercado }}</h2>
+    <ul style="list-style: none; padding-left: 0;">
+        {% for item in itens %}
+            <li style="margin-bottom: 0.75em; padding: 0.5em; border: 1px solid #ddd; border-radius: 8px;">
+                <strong>{{ item["quantidade"] }}x {{ item["item"] }}</strong><br>
+                💰 <span style="color: green; font-weight: bold;">R$ {{ item["valor_total"] }}</span>
+                <small style="color: #555;">(R$ {{ item["valor_unitario"] }}/un.)</small><br>
+                <small style="color: #888;">⏰ {{ item["data_oferta"] }}</small>
+            </li>
         {% endfor %}
+    </ul>
+{% endfor %}
 
         <div class="resumo">
             Total gasto: R$ {{ gasto_total }}<br>
