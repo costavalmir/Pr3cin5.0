@@ -2,193 +2,235 @@
 <html lang="pt-br">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GMMDW2NV91"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-GMMDW2NV91');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GMMDW2NV91"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-GMMDW2NV91');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Resultados - Pr3cin</title>
+    <title>Pr3cin - Comparador de Preços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            padding: 20px;
-            background: #eef2f3;
+        * {
             box-sizing: border-box;
         }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px 20px;
-            border-radius: 10px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #1a73e8;
-        }
-
-        h2 {
-            margin-top: 40px;
-            color: #333;
-            font-size: 1.2em;
-        }
-
-        ul {
-            list-style-type: none;
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
             padding: 0;
+            background-color: #f0f2f5;
+            padding-bottom: 90px;
         }
-
-        li {
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            position: relative;
+            text-align: center;
+        }
+        .usuario-logado {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-weight: 600;
+            color: #4a90e2;
+            font-size: 0.95rem;
+            text-align: left;
+        }
+        .logo {
+            max-width: 160px;
+            margin: 0 auto 10px;
+        }
+        h1 {
+            color: #333333;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+        label, input, select {
+            width: 100%;
             margin-bottom: 10px;
-            font-size: 0.95em;
         }
-
-        .btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #1a73e8;
+        .item-selecionado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .item-selecionado img {
+            width: 50px;
+            height: auto;
+            margin-right: 10px;
+        }
+        .btn-remover {
+            background: #e53935;
             color: white;
             border: none;
+            padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
         }
-
-        .btn-secondary {
-            background: #6c757d;
-            margin-left: 10px;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
+        .btn-adicionar, .btn-enviar, .btn-sair, .btn-voltar {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-
-        .resumo {
-            margin-top: 30px;
-            font-size: 1.05em;
-            font-weight: bold;
+        .btn-adicionar, .btn-enviar {
+            background-color: #4a90e2;
+            color: white;
         }
-
-        .botoes-voltar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 30px;
+        .btn-adicionar:hover, .btn-enviar:hover {
+            background-color: #357bd8;
         }
-
+        .btn-voltar {
+            background-color: #6c757d;
+            color: white;
+            margin-bottom: 12px;
+        }
         .btn-sair {
-            background: #f44336;
+            background-color: #e74c3c;
+            color: white;
             margin-top: 20px;
+        }
+        .btn-sair:hover {
+            background-color: #c0392b;
+        }
+        #busca {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .propaganda {
+            position: fixed;
+            bottom: 0;
+            left: 0;
             width: 100%;
+            height: 80px;
+            background-color: #fff;
+            border-top: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .propaganda img {
+            max-height: 70px;
+            max-width: 100%;
         }
 
         @media (max-width: 600px) {
-            .container {
-                padding: 20px 15px;
-            }
-
-            h1 {
-                font-size: 1.4em;
-            }
-
-            .btn, .btn-secondary {
-                width: 100%;
-                padding: 12px;
-                font-size: 1em;
-            }
-
-            .btn-secondary {
-                margin-left: 0;
-            }
-
-            .botoes-voltar {
+            .item-selecionado {
                 flex-direction: column;
-                gap: 10px;
+                align-items: flex-start;
+            }
+            .btn-remover {
+                align-self: flex-end;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Melhores Preços</h1>
+        {% if session['usuario'] %}
+            <div class="usuario-logado">Olá, {{ session['usuario'] }} 👋</div>
+        {% endif %}
 
-{% for mercado, itens in resultado_por_mercado.items() %}
-    <h2>{{ mercado }}</h2>
-    <ul>
-        {% for item in itens %}
-            <li>
-                {{ item["item"] }} ({{ item["quantidade"] }} un.): 
-                R$ {{ item["valor_total"] }} (R$ {{ item["valor_unitario"] }} un.)<br>
-                <small>⏰ Oferta reportada em: {{ item["data_oferta"] }}</small>
-            </li>
-        {% endfor %}
-            </ul>
-{% endfor %}
+        <img class="logo" src="https://raw.githubusercontent.com/costavalmir/Pr3cin5.0/refs/heads/main/Parceiros/Logo_Pr3cin.png" alt="Logo Pr3cin">
+        
+        <h1>Comparar Preços</h1>
 
-        <div class="resumo">
-            Total gasto: R$ {{ gasto_total }}<br>
-            Economia total: R$ {{ economia_total }}
-        </div>
+        <button onclick="window.location.href='/selecionar_mercado'" class="btn-voltar">← Voltar à seleção de mercados</button>
 
-        <div class="botoes-voltar">
-            <button class="btn" onclick="window.history.back()">Voltar</button>
-            <button class="btn" onclick="copiarLista()">Copiar Lista</button>
-        </div>
+        <form id="form-produtos" action="/resultado" method="post">
+            <label for="busca">Buscar produto:</label>
+            <input type="text" id="busca" placeholder="Digite para filtrar produtos...">
 
-        <button class="btn-sair" onclick="window.location.href='/login'">Sair</button>
+            <label for="produto">Produto:</label>
+            <select id="produto">
+                {% for p in produtos %}
+                    <option value="{{ p.nome }}">{{ p.nome }}</option>
+                {% endfor %}
+            </select>
 
-        <!-- Novo botão para compartilhar no WhatsApp -->
-        <div class="botoes-voltar">
-            <button class="btn" onclick="compartilharWhatsApp()">Compartilhe a Pr3cin com seus amigos</button>
-        </div>
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" min="1" value="1">
+
+            <button type="button" class="btn-adicionar" onclick="adicionarProduto()">Adicionar Produto</button>
+
+            <div id="lista-itens"></div>
+
+            <button type="submit" class="btn-enviar">Ver Melhor Preço</button>
+        </form>
+    </div>
+
+    <div class="propaganda">
+        <a href="#" target="_blank">
+            <img src="https://raw.githubusercontent.com/costavalmir/Pr3cin5.0/refs/heads/main/Parceiros/Assinatura%20de%20email%20profissional%20minimalista%20azul%20e%20branco%20(360%20x%2060%20px).png" alt="Propaganda">
+        </a>
     </div>
 
     <script>
-        function copiarLista() {
-            let texto = "Lista de compras com melhores preços:\n\n";
-            {% for mercado, itens in resultado_por_mercado.items() %}
-                texto += "🛒 {{ mercado }}:\n";
-                {% for item in itens %}
-                    texto += "- {{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)\n";
-                    texto += "  ⏰ Oferta reportada em: {{ item.data_oferta }}\n";
-                {% endfor %}
-                texto += "\n";
-            {% endfor %}
-            texto += "💰 Total gasto: R$ {{ gasto_total }}\n";
-            texto += "🎉 Economia total: R$ {{ economia_total }}";
+        const listaItens = document.getElementById("lista-itens");
+        const produtoSelect = document.getElementById("produto");
+        const quantidadeInput = document.getElementById("quantidade");
 
-            navigator.clipboard.writeText(texto).then(function() {
-                alert("Lista copiada com sucesso!");
-            }, function(err) {
-                alert("Erro ao copiar: ", err);
-            });
+        const imagens = {
+            {% for p in produtos %}
+                "{{ p.nome }}": "{{ p.imagem }}",
+            {% endfor %}
+        };
+
+        function adicionarProduto() {
+            const produto = produtoSelect.value;
+            const quantidade = quantidadeInput.value;
+            if (!produto || quantidade < 1) return;
+
+            const imagemUrl = imagens[produto] || "";
+
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "item-selecionado";
+            itemDiv.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <img src="${imagemUrl}" alt="${produto}">
+                    <span>${produto} - ${quantidade} un.</span>
+                </div>
+                <button type="button" class="btn-remover" onclick="removerProduto(this)">Remover</button>
+                <input type="hidden" name="produto" value="${produto}">
+                <input type="hidden" name="quantidade" value="${quantidade}">
+            `;
+            listaItens.appendChild(itemDiv);
         }
 
-        function compartilharWhatsApp() {
-            let texto = "Confira a Pr3cin - Comparador de Preços! 💸\n\n";
-            {% for mercado, itens in resultado_por_mercado.items() %}
-                texto += "🛒 {{ mercado }}:\n";
-                {% for item in itens %}
-                    texto += "- {{ item.item }} ({{ item.quantidade }} un.): R$ {{ item.valor_total }} (R$ {{ item.valor_unitario }} un.)\n";
-                    texto += "  ⏰ Oferta reportada em: {{ item.data_oferta }}\n";
-                {% endfor %}
-                texto += "\n";
-            {% endfor %}
-            texto += "💰 Total gasto: R$ {{ gasto_total }}\n";
-            texto += "🎉 Economia total: R$ {{ economia_total }}";
-
-            // URL para o WhatsApp com a mensagem
-            let url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
-            window.open(url, "_blank");
+        function removerProduto(botao) {
+            botao.parentElement.remove();
         }
+
+        document.getElementById("busca").addEventListener("input", function () {
+            const termo = this.value.toLowerCase();
+            for (const option of produtoSelect.options) {
+                option.style.display = option.value.toLowerCase().includes(termo) ? "" : "none";
+            }
+        });
     </script>
 </body>
 </html>
