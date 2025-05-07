@@ -22,8 +22,19 @@
             margin: 0;
             padding: 0;
             background-color: #f0f2f5;
-            padding-bottom: 90px; /* espaço para a propaganda */
+            padding-bottom: 90px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
+
+        body.fade-in {
+            opacity: 1;
+        }
+
+        body.fade-out {
+            opacity: 0;
+        }
+
         .container {
             max-width: 800px;
             margin: 40px auto;
@@ -33,29 +44,35 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
             position: relative;
         }
+
         h1 {
             text-align: center;
             color: #333333;
             font-size: 1.8rem;
             margin-bottom: 20px;
         }
+
         h2 {
             color: #333;
             font-size: 1.2em;
         }
+
         ul {
             list-style-type: none;
             padding: 0;
         }
+
         li {
             margin-bottom: 10px;
             font-size: 0.95em;
         }
+
         .resumo {
             margin-top: 30px;
             font-size: 1.05em;
             font-weight: bold;
         }
+
         .btn {
             margin-top: 20px;
             padding: 12px;
@@ -67,7 +84,7 @@
             font-size: 1rem;
             width: 100%;
         }
-        
+
         .propaganda {
             position: fixed;
             bottom: 0;
@@ -107,27 +124,25 @@
         <h1>Melhores Preços</h1>
 
         {% for mercado, itens in resultado_por_mercado.items() %}
-    <h2 style="margin-top: 1em;">🛒 {{ mercado }}</h2>
-    <ul style="list-style: none; padding-left: 0;">
-        {% for item in itens %}
-            <li style="margin-bottom: 0.75em; padding: 0.5em; border: 1px solid #ddd; border-radius: 8px;">
-                <strong>{{ item["quantidade"] }}x {{ item["item"] }}</strong><br>
-                💰 <span style="color: green; font-weight: bold;">R$ {{ item["valor_total"] }}</span>
-                <small style="color: #555;">(R$ {{ item["valor_unitario"] }}/un.)</small><br>
-                <small style="color: #888;">⏰ {{ item["data_oferta"] }}</small>
-            </li>
+            <h2 style="margin-top: 1em;">🛒 {{ mercado }}</h2>
+            <ul style="list-style: none; padding-left: 0;">
+                {% for item in itens %}
+                    <li style="margin-bottom: 0.75em; padding: 0.5em; border: 1px solid #ddd; border-radius: 8px;">
+                        <strong>{{ item["quantidade"] }}x {{ item["item"] }}</strong><br>
+                        💰 <span style="color: green; font-weight: bold;">R$ {{ item["valor_total"] }}</span>
+                        <small style="color: #555;">(R$ {{ item["valor_unitario"] }}/un.)</small><br>
+                        <small style="color: #888;">⏰ {{ item["data_oferta"] }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
         {% endfor %}
-    </ul>
-{% endfor %}
 
         <div class="resumo">
             Total gasto: R$ {{ gasto_total }}<br>
             Economia total: R$ {{ economia_total }}
         </div>
 
-        <button class="btn" onclick="window.location.href='https://pr3cin5-0.onrender.com/'">Voltar</button>
-
-        <!-- Novo botão para compartilhar no WhatsApp -->
+        <button class="btn" onclick="irComFade('https://pr3cin5-0.onrender.com/')">Voltar</button>
         <button class="btn" onclick="compartilharWhatsApp()">Compartilhe a Pr3cin com seus amigos</button>
     </div>
 
@@ -138,6 +153,18 @@
     </div>
 
     <script>
+        // Aplica fade-in ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('fade-in');
+        });
+
+        function irComFade(url) {
+            document.body.classList.remove('fade-in');
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500); // Tempo da animação
+        }
 
         function compartilharWhatsApp() {
             let texto = "Compartilhar os resultados💸\n\n";
@@ -152,10 +179,10 @@
             texto += "💰 Total gasto: R$ {{ gasto_total }}\n";
             texto += "🎉 Economia total: R$ {{ economia_total }}";
 
-            // URL para o WhatsApp com a mensagem
             let url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
             window.open(url, "_blank");
         }
     </script>
 </body>
 </html>
+
