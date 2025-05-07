@@ -27,13 +27,13 @@ def validar_login(usuario, senha):
             return True
     return False
 
-@app.route("/selecionar_mercados", methods=["GET"])
-def selecionar_mercados():
+@app.route("/selecionar_mercado", methods=["GET"])
+def selecionar_mercado():
     # if "usuario" not in session:
     #     return redirect(url_for("login"))
     
     mercados_disponiveis = sorted(df["Local"].dropna().unique())
-    return render_template("selecionar_mercados.html", mercados=mercados_disponiveis)
+    return render_template("selecionar_mercado.html", mercados=mercados_disponiveis)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -48,7 +48,7 @@ def login():
         if validar_login(usuario, senha):
             session["usuario"] = usuario_formatado
             usuarios_logados[usuario_formatado] = True
-            return redirect(url_for("selecionar_mercados"))
+            return redirect(url_for("selecionar_mercado"))
         else:
             return render_template("login.html", erro="Usuário ou senha inválidos.")
     return render_template("login.html")
