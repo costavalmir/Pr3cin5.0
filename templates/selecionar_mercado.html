@@ -15,7 +15,16 @@
             padding: 0;
             background-color: #f0f2f5;
             padding-bottom: 90px; /* espaço para a propaganda */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
+        body.fade-in {
+            opacity: 1;
+        }
+        body.fade-out {
+            opacity: 0;
+        }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -131,7 +140,7 @@
 
         <h1>Escolha os Mercados</h1>
         
-        <form method="post" action="/">
+        <form method="post" action="/" onsubmit="return enviarComFade(this)">
             {% for mercado in mercados %}
                 <div class="mercado-checkbox">
                     <label>
@@ -142,7 +151,6 @@
             {% endfor %}
             <button type="submit" class="btn-continuar">Continuar</button>
         </form>
-
     </div>
 
     <div class="propaganda">
@@ -150,5 +158,22 @@
             <img src="https://raw.githubusercontent.com/costavalmir/Pr3cin5.0/refs/heads/main/Parceiros/Assinatura%20de%20email%20profissional%20minimalista%20azul%20e%20branco%20(360%20x%2060%20px).png">
         </a>
     </div>
+
+    <script>
+        // Fade-in ao carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('fade-in');
+        });
+
+        // Fade-out antes de enviar o formulário
+        function enviarComFade(form) {
+            document.body.classList.remove('fade-in');
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                form.submit();
+            }, 500);
+            return false; // Previne envio imediato
+        }
+    </script>
 </body>
 </html>
